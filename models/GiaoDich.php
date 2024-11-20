@@ -1,5 +1,4 @@
 <?php
-
 class GiaoDich {
     private $db;
 

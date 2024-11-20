@@ -2,11 +2,9 @@
 
 class HoaDon {
     private $db;
-
     public function __construct($pdo) {
         $this->db = $pdo;
     }
-
     public function themHoaDon($data) {
         $stmt = $this->db->prepare("
             INSERT INTO HoaDon (maDonHang, sdt, tenKH, diaChiGiaoHang, ngayTao, tongTien, 

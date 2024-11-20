@@ -14,12 +14,12 @@ class DonHangController {
     // Hiển thị danh sách đơn hàng
 
     public function layDSDonHangChoXacNhan() {
-        $trangThai = 'Đang chờ xác nhận';
-        $donHangs = $this->donHangModel->layDSDonHang($trangThai);
-        require_once 'views/QuanLyDonHang/DanhSachDonHang.php';
+        $donHangsChoXacNhan = $this->donHangModel->layDSDonHangTheoNhom(['Đang chờ xác nhận']);
+        $donHangsDangXuLy = $this->donHangModel->layDSDonHangTheoNhom(nhomTrangThai: ['Đang chuẩn bị', 'Đang giao hàng', 'Đang chờ hoàn tiền - Đã bị hủy bởi khách hàng', 'Đang chờ hoàn tiền - Đã bị hủy bởi quản lý',]);
+        $donHangsDaXuLyXong = $this->donHangModel->layDSDonHangTheoNhom(['Đã hoàn thành','Đã bị hủy bởi khách hàng','Đã bị hủy bởi quản lý', 'Đã hoàn tiền', 'Đơn hàng rủi ro']);
+        require_once 'views/QuanLyDonHangUI/DanhSachDonHangUI.php';
+
     }
-
-
 
     // Thêm đơn hàng
     public function themDonHang() {
@@ -42,7 +42,7 @@ class DonHangController {
             $this->donHangModel->themDonHang($data);
             header('Location: index.php?controller=donhang&action=index');
         } else {
-            require_once 'views/QuanLyDonHang/ThemDonHang.php';
+            require_once 'views/QuanLyDonHangUI/ThemDonHangUI.php';
         }
     }
 

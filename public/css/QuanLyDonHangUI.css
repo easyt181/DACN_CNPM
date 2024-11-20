@@ -1,0 +1,9 @@
+
+
+.action-button {
+    display: inline-block;
+    width: 100px;
+    height: 40px;
+    margin: 5px 5px; 
+    text-align: center;
+}

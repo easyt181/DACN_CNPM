@@ -48,27 +48,45 @@ class DonHang {
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    public function layDSDonHang($trangThai) {
+    // public function layDSDonHang($trangThai) {
+    //     $sql = "SELECT 
+    //             donhang.maDonHang, 
+    //             donhang.ngayTao, 
+    //             donhang.diaChiGiaoHang,
+    //             donhang.tongTien, 
+    //             donhang.trangThaiThanhToan,
+    //             hoadon.tenKH, 
+    //             hoadon.sdt
+    //         FROM donhang 
+    //         INNER JOIN hoadon ON donhang.maDonHang = hoadon.maDonHang
+    //         WHERE donhang.trangThaiDonHang = :trangThai";
+    //     $stmt = $this->db->prepare($sql);
+    //     $stmt->execute(['trangThai' => $trangThai]);
+    //     return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    // }
 
-        $sql = "
-            SELECT 
-                donhang.maDonHang, 
-                donhang.ngayTao, 
-                donhang.diaChiGiaoHang,
-                donhang.tongTien, 
-                donhang.trangThaiThanhToan,
-                hoadon.tenKH, 
-                hoadon.sdt
-            FROM donhang 
-            INNER JOIN hoadon ON donhang.maDonHang = hoadon.maDonHang
-            WHERE donhang.trangThaiDonHang = :trangThai
-        ";
-        $stmt = $this->db->prepare($sql);
-        $stmt->execute(['trangThai' => $trangThai]);
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    public function layDSDonHangTheoNhom($nhomTrangThai) {
+        try {
+            $query = "
+                SELECT 
+                    donhang.*, hoadon.tenKH, hoadon.sdt, hoadon.diaChiGiaoHang 
+                FROM 
+                    donhang 
+                INNER JOIN 
+                    hoadon 
+                ON 
+                    donhang.maDonHang = hoadon.maDonHang
+                WHERE 
+                    donhang.trangThaiDonHang IN (" . implode(",", array_fill(0, count($nhomTrangThai), "?")) . ")";
+            
+            $stmt = $this->db->prepare($query);
+            $stmt->execute($nhomTrangThai);
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            echo "Lỗi: " . $e->getMessage();
+            return [];
+        }
     }
-
-
 
 }
 ?>
