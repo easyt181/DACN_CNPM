@@ -1,4 +1,8 @@
 
+th{
+    text-align:center; 
+    vertical-align:middle;
+}
 
 .action-button {
     display: inline-block;
@@ -6,4 +10,39 @@
     height: 40px;
     margin: 5px 5px; 
     text-align: center;
+    color: white;
 }
+
+.btn-warning{
+    background-color: #cc7400;
+    border-color: #eea236;
+    color: white;   
+}
+.btn-info{
+    background-color: #0184b8;
+    border-color: #0072a2;
+    color: white;   
+}
+
+.btn-warning:hover {
+    background-color: #d39e00;
+    color: white;
+    border-color: #d39e00; 
+}
+.btn-info:hover {
+    background-color: #029bce; 
+    color: white; 
+    border-color: #029bce;
+}
+
+.btn-danger:hover {
+    background-color: #f00000; 
+    color: white; 
+    border-color: #cc0000;
+}
+
+.btn-success:hover {
+    background-color: #02a302; 
+    color: white; 
+    border-color: #00a200;
+}   
