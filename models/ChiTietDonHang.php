@@ -7,6 +7,11 @@ class ChiTietDonHang {
         $this->db = $pdo;
     }
 
+    public function layChiTietDonHangTheoMaDonHang($maDonHang) {
+        $stmt = $this->db->prepare("SELECT td.tenMonAn, ct.donGia, ct.soLuong, ct.thanhTien FROM chitietdonhang ct LEFT JOIN thucdon td ON ct.maMonAn = td.maMonAn WHERE ct.maDonHang = ?");
+        $stmt->execute([$maDonHang]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
     public function tinhThanhTien($maChiTiet) {
         $stmt = $this->db->prepare("SELECT soLuong, donGia FROM ChiTietDonHang WHERE maChiTiet = ?");
         $stmt->execute([$maChiTiet]);

@@ -119,7 +119,14 @@ function getTTDH(TTHD) {
         data: JSON.stringify({TTDH: TTHD}),
         contentType: "application/json",
         success: function (response) {
-            window.location.href = 'index.php?controller=giohang&action=hienThiGioHang';
+            const data = JSON.parse(response);
+            if(data.PTTT == 'Thanh toán khi nhận hàng'){
+                alert('Đơn hàng được tạo thành công!');
+                window.location.href = 'index.php?controller=trangchu&action=Home';
+            }else{
+                alert('Đơn hàng được tạo thành công! Đến bước thanh toán qua QR code.');
+                window.location.href = 'index.php?controller=donhang&action=thanhToanQR&maDonHang=' + data.maDonHang; 
+            }
         },
         error: function (err) {
             console.error("Error:", err);

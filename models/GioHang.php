@@ -51,6 +51,9 @@ class GioHangModel {
         ]);
         return true;
     }
+    public function LayMaDHNgayTao() {
+        
+    }
 }
 
 

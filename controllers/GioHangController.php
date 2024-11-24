@@ -1,24 +1,17 @@
 <?php
 
 require_once (__DIR__ . '/../models/GioHang.php');
-$data = json_decode(file_get_contents('php://input'), true); 
-if(isset($data['maMonAn'])){
-    $gioHangController = new GioHangController();
-    $gioHangController->remove($data['maMonAn']);
-}
-// if (isset($data['TTDH'])) {
-//         $gioHangController = new GioHangController();
-//         $gioHangController->insert_DH($data['TTDH']);
-//         echo json_encode($data['TTDH']);
-// }
+require_once (__DIR__ . '/../models/DonHang.php');
 
 
 class GioHangController {
     private $gioHangModel;
+    private $donHangModel;
 
     public function __construct($pdo=null) {
         if($pdo != null) {
             $this->gioHangModel = new GioHangModel($pdo);
+            $this->donHangModel = new DonHang($pdo);
         }
         
     }
@@ -48,8 +41,9 @@ class GioHangController {
         $data = json_decode(file_get_contents('php://input'), true); 
         if (isset($data['TTDH'])) {
             $is_true = $this->gioHangModel->insertDonHang($data['TTDH']);
+            $maDH = $this->donHangModel->lastInsertId($data['TTDH']['ngayTao']);
             if($is_true) {
-                echo json_encode(['success' => true, 'message' => 'Đơn hàng đã được tạo thành công .']);
+                echo json_encode(['success' => true, 'message' => 'Đơn hàng đã được tạo thành công .', 'PTTT' => $data['TTDH']['phuongThuc'], 'maDonHang' => $maDH]);
             }else{
                 echo json_encode(['success' => false, 'message' => 'Thất bại .']);
             }
