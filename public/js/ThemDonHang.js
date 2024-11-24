@@ -4,9 +4,7 @@ let cart = [];
 // Tìm kiếm món ăn
 $('#btnSearch').click(function (event) {
     event.preventDefault(); 
-
     const keyword = $('#searchFood').val();
-
     $.ajax({
         url: 'controllers/TimKiemMonAn.php',
         method: 'GET',
@@ -96,7 +94,6 @@ $('#submitOrder').click(function (event) {
         alert('Giỏ hàng đang trống! Vui lòng thêm món ăn vào giỏ.');
         return;
     }
-
     const dataToSend = {
         cartItems: cart, // Gửi toàn bộ giỏ hàng
         tenKH: document.getElementById('tenKH').value,

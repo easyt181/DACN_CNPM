@@ -7,13 +7,13 @@ if ($keyword == '') {
     $stmt = $pdo->prepare($query);
     $stmt->execute();
     $result = $stmt->fetchAll();
-
     if ($result) {
         echo json_encode($result);  
     } else {
         echo json_encode([]); 
     }
 }
+
 elseif (!empty($keyword)) {
     $query = "SELECT * FROM thucdon WHERE tenMonAn LIKE :keyword"; 
 

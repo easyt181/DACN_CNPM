@@ -61,7 +61,6 @@ class QuanLyDonHangController {
             echo json_encode(['success' => false, 'message' => 'Dữ liệu không hợp lệ.']);
             return;
         }
-    
         $cartItems = $inputData['cartItems'];
         $sdt = $inputData['sdt'];
         $tenKH = $inputData['tenKH'];
@@ -75,7 +74,6 @@ class QuanLyDonHangController {
         $ghiChu = $inputData['ghiChu'] ?? null; 
         
         try {
-            // Kiểm tra khách hàng đã tồn tại
             $khachHang = $this->khachHangModel->kiemTraKH($sdt);
             if (!$khachHang) {
                 $dataKH = [
@@ -92,6 +90,10 @@ class QuanLyDonHangController {
             $maKH = $khachHang['maKH'];
     
             // Xác định trạng thái thanh toán và hóa đơn
+
+
+
+            
             $trangThaiThanhToan = 'Chưa thanh toán';
             $trangThaiHoaDon = $trangThaiThanhToan;
     
@@ -132,7 +134,6 @@ class QuanLyDonHangController {
                 ];
                 $this->chiTietDonHangModel->themChiTietDonHang($dataChiTietDonHang);
             }
-            
             $dataHoaDon = [
                 'maDonHang' => $maDonHang,
                 'sdt' => $sdt,
@@ -144,7 +145,9 @@ class QuanLyDonHangController {
                 'trangThaiHoaDon' => $trangThaiHoaDon,
                 'trangThaiHoanTien' => '0',
             ];
+
             $this->hoaDonModel->themHoaDon($dataHoaDon);
+            
             echo json_encode(['success' => true, 'message' => 'Đơn hàng đã được tạo thành công .','PTTT' => $phuongThucThanhToan, 'maDonHang' => $maDonHang]);
             
         } catch (Exception $e) {
