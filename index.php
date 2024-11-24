@@ -18,14 +18,19 @@ switch ($controller) {
             $donHangController->layChiTietDonHang();
         }elseif ($action == 'themDonHangQuanLy') {
             $donHangController->themDonHangQuanLy();
-        } elseif ($action == 'suaDonHang') {
+        }elseif($action == 'thanhToanQR'){
+            if(isset($_GET['maDonHang'])){
+                $maDonHang = $_GET['maDonHang'];
+                require_once 'views/ThanhToanQRCodeUI.php';
+            }
+            else {
+                echo "Không tìm thấy mã đơn hàng.";
+            }
+        }elseif ($action == 'suaDonHang') {
             $donHangController->suaDonHang($_GET['maDonHang']);
         } elseif ($action == 'huyDonHang') {
             $donHangController->huyDonHang($_GET['maDonHang']);
-        } elseif ($action == 'taoQRCode') {
-            // $donHangController->hienThiQRCode($_GET['maDonHang']);
-            $donHangController->hienThiQRCode('DH004');
-        }
+        } 
         break;
 }
 ?>

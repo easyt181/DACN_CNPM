@@ -129,8 +129,15 @@ $('#submitOrder').click(function (event) {
             try {
                 const result = JSON.parse(response); 
                 if (result.success) {
-                    alert('Đơn hàng được tạo thành công!');
-                    window.location.href = 'index.php?controller=donhang&action=hienThiDanhSachDonHang';
+                    const maDonHang = result.maDonHang;
+                    if(result.PTTT == 'Thanh toán khi nhận hàng'){
+                        alert('Đơn hàng được tạo thành công!');
+                        window.location.href = 'index.php?controller=donhang&action=hienThiDanhSachDonHang';
+                    }else{
+                        alert('Đơn hàng được tạo thành công! Đến bước thanh toán qua QR code.');
+                        window.location.href = 'index.php?controller=donhang&action=thanhToanQR&maDonHang=' + maDonHang; 
+                    }
+
                 } else {
                     alert('Lỗi: ' + result.message);
                 }

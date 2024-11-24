@@ -17,7 +17,7 @@ class QuanLyDonHangController {
         $this->khachHangModel = new KhachHang($pdo);
         $this->hoaDonModel = new HoaDon($pdo);  
     }
-    
+
     public function layDSDonHangTheoNhom() {
         $nhomChoXacNhan = ['Đang chờ xác nhận'];    
         $nhomDangXuLy = ['Đang chuẩn bị', 'Đang giao hàng', 'Đang chờ hoàn tiền - Đã bị hủy bởi khách hàng', 'Đang chờ hoàn tiền - Đã bị hủy bởi quản lý',];
@@ -92,7 +92,7 @@ class QuanLyDonHangController {
             $maKH = $khachHang['maKH'];
     
             // Xác định trạng thái thanh toán và hóa đơn
-            $trangThaiThanhToan = $phuongThucThanhToan === 'Thanh toán khi nhận hàng' ? 'Chưa thanh toán' : 'Đã thanh toán';
+            $trangThaiThanhToan = 'Chưa thanh toán';
             $trangThaiHoaDon = $trangThaiThanhToan;
     
             // Chuẩn bị dữ liệu đơn hàng
@@ -145,7 +145,8 @@ class QuanLyDonHangController {
                 'trangThaiHoanTien' => '0',
             ];
             $this->hoaDonModel->themHoaDon($dataHoaDon);
-            echo json_encode(['success' => true, 'message' => 'Đơn hàng đã được tạo thành công']);
+            echo json_encode(['success' => true, 'message' => 'Đơn hàng đã được tạo thành công .','PTTT' => $phuongThucThanhToan, 'maDonHang' => $maDonHang]);
+            
         } catch (Exception $e) {
             echo json_encode(['success' => false, 'message' => 'Lỗi: ' . $e->getMessage()]);
         }

@@ -30,11 +30,6 @@
             </div>
         </div>
         <div>
-            <a href="index.php?controller=donhang&action=taoQRCode"><button type="button" class="btn btn-success" aria-expanded="false" data-bs-auto-close="outside">
-                    Test Tạo mã QR
-                </button></a>
-        </div>
-        <div>
             <a href="index.php?controller=donhang&action=hienThiTrangThemDonHang" target="_blank"><button type="button" class="btn btn-primary" aria-expanded="false" data-bs-auto-close="outside">
                     Thêm đơn hàng
                 </button></a>

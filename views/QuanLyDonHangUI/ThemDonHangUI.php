@@ -113,7 +113,7 @@
                     <label for="tongTien" class="form-label">
                         Tổng tiền: <span id="totalCostSpan">0</span> VNĐ
                     </label>
-                    <input type="number" class="form-control" id="tongTien" required readonly>
+                    <input type="number" class="form-control" id="tongTien" required>
                 </div>
             </div>
 
