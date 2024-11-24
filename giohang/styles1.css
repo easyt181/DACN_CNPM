@@ -1,0 +1,29 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f8f9fa;
+  }
+  
+  .card-header {
+    border-bottom: 2px solid #ff6f61;
+  }
+  
+  .alert-warning {
+    background-color: #fff3cd;
+    border: 1px solid #ffeeba;
+    color: #856404;
+  }
+  
+  .card img {
+    width: 100px;
+    height: 100px;
+    object-fit: cover;
+  }
+  
+  .bi-star-fill {
+    font-size: 20px;
+  }
+  
+  textarea {
+    resize: none;
+  }
+  
