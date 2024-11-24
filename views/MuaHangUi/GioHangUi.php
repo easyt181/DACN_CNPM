@@ -15,8 +15,10 @@ $TTDH = [
     'diaChi' => $diaChi,
     'ngayTao' => $ngayTao,
 ];
+$CTDH = [];
 $tongTien = 0;
 foreach ($cart as $item){
+    array_push($CTDH,['maMonAn'=>$item['maMonAn'],'soLuong'=> $item['soLuong'],'donGia'=> $item['gia']]);
     $tongTien += (int)$item['gia'] * (int)$item['soLuong'];
 }
 
@@ -128,13 +130,13 @@ foreach ($cart as $item){
                         <div class="form-check">
                             <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault2" checked>
                         <label class="form-check-label" for="flexRadioDefault2">
-                            Thanh toán trực tiếp
+                            Thanh toán qua QRCode
                         </label>
                     </div>
                 </div>
                 <div class="btn_thanhToan">
                 <button type="button" class="btn btn-danger" 
-                    onclick="showConfirmation(<?php echo htmlspecialchars(json_encode($TTDH), ENT_QUOTES, 'UTF-8'); ?>)">
+                    onclick="showConfirmation(<?php $data = ['TTDH' => $TTDH,'CTDH' => $CTDH]; echo htmlspecialchars(json_encode($data),ENT_QUOTES, 'UTF-8'); ?>)">
                     Thanh toán
                 </button>
 

@@ -1,10 +1,8 @@
 <?php
 date_default_timezone_set('Asia/Ho_Chi_Minh');
 require_once 'config/database.php';  // Kết nối cơ sở dữ liệu
-require_once 'controllers/DonHangController.php';
+require_once 'controllers/QuanLyDonHangController.php';
 require_once 'controllers/GioHangController.php';
-// require_once (__DIR__ . '\controllers\DonHangController.php');
-// require_once (__DIR__ . '/controllers/GioHangController.php');
 
 $controller = isset($_GET['controller']) ? $_GET['controller'] : 'trangchu';
 $action = isset($_GET['action']) ? $_GET['action'] : 'Home';

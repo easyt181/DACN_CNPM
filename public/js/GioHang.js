@@ -88,13 +88,13 @@ window.onload = async function() {
         phiShip = (distance.toFixed(2) * 5000); 
         tongTien = parseInt(tongTien) + parseFloat(phiShip);
         let formattedResult = phiShip.toLocaleString();
-        tongTien = tongTien.toLocaleString();
+        let tongTien_ = tongTien.toLocaleString();
         // Hiển thị khoảng cách
         document.getElementById('distance').textContent = `${formattedResult} VND`;
-        document.getElementById('tongTientxt').textContent = `${tongTien} VND`;
+        document.getElementById('tongTientxt').textContent = `${tongTien_} VND`;
     }
 };
-function getTTDH(TTHD) {
+function getTTDH(data) {
     const tongTien = document.getElementById('tongTientxt').textContent;
     let tongTien_ = tongTien.replace(" VND", "");
     const ghiChu = document.getElementById('textarea').value;
@@ -103,20 +103,23 @@ function getTTDH(TTHD) {
     let phuongThuc = '';
     
     if (selectedRadio === 'flexRadioDefault1') {
-        phuongThuc = 'Tiền mặt';
+        phuongThuc = 'Thanh toán khi nhận hàng';
     } else if (selectedRadio === 'flexRadioDefault2') {
-        phuongThuc = 'Chuyển khoản';
+        phuongThuc = 'Thanh toán qua QRCode';
     }
-    let tongTienNum = parseInt(tongTien_.replace(/,/g, ""), 10);
-    TTHD.khoangCach = distance.toFixed(2);
-    TTHD.phiShip = phiShip;
-    TTHD.tongTien = tongTienNum;
-    TTHD.phuongThuc = phuongThuc;
-    TTHD.ghiChu = ghiChu;
+
+    let tongTienNum = parseFloat(tongTien_.replace(/[.,]/g, "").replace(" VND", ""));
+    tongTienNum = 2000;
+    let TTDH_ = data.TTDH
+    TTDH_.khoangCach = distance.toFixed(2);
+    TTDH_.phiShip = phiShip;
+    TTDH_.tongTien = tongTienNum;
+    TTDH_.phuongThuc = phuongThuc;
+    TTDH_.ghiChu = ghiChu;
     $.ajax({
         url: "index.php?controller=giohang&action=themDonHangKH",
         type: "POST",
-        data: JSON.stringify({TTDH: TTHD}),
+        data: JSON.stringify({TTDH: TTDH_, CTDH: data.CTDH}),
         contentType: "application/json",
         success: function (response) {
             const data = JSON.parse(response);
