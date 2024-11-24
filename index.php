@@ -1,8 +1,10 @@
 <?php
 date_default_timezone_set('Asia/Ho_Chi_Minh');
 require_once 'config/database.php';  // Kết nối cơ sở dữ liệu
-require_once 'controllers/DonHangController.php';
+require_once 'controllers/QuanLyDonHangController.php';
 require_once 'controllers/GioHangController.php';
+require_once 'controllers/LichSuController.php';
+
 // require_once (__DIR__ . '\controllers\DonHangController.php');
 // require_once (__DIR__ . '/controllers/GioHangController.php');
 
@@ -44,6 +46,16 @@ switch ($controller) {
         }elseif($action == 'xoaGioHang'){
             $gioHangController->remove();
         }
+    case 'danhgia':
+        $danhGiaController = new DanhGiaController($pdo);
+        if ($action == 'guiDanhGia') {
+            $danhGiaController->guiDanhGia();
+        }elseif($action == 'hienThiDanhGia'){
+            $danhGiaController->hienThiDanhGia();
+        }elseif($action == 'huyDonHang'){
+            $danhGiaController->huyDonHang();
+        }
+        break;
     case 'trangchu':
         if($action == 'Home'){
             require_once('views/TrangChu.php');
