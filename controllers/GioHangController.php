@@ -53,7 +53,7 @@ class GioHangController {
                 $thanhTien = (int)$item['soLuong'] * (float)$item['donGia'];
                 $CTDH = ['maMonAn'=> $item['maMonAn'], 'soLuong'=>$item['soLuong'],'donGia'=>$item['donGia'], 'maDonHang' => $maDH, 'thanhTien' => $thanhTien];
                 $this->chiTietDonHangModel->themChiTietDonHang($CTDH);
-                
+
             }
             
             

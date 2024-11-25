@@ -8,10 +8,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Quản lý đơn hàng</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
-    <link rel="stylesheet" href="./public/css/QuanLyDonHangUI.css">
-    <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
-
+    <link rel="stylesheet" href="./public/css/QuanLyDonHangUI.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 </head>
@@ -29,22 +28,22 @@
                 <hr>
             </div>
         </div>
-        <div>
-            <a href="index.php?controller=donhang&action=hienThiTrangThemDonHang" target="_blank"><button type="button" class="btn btn-primary" aria-expanded="false" data-bs-auto-close="outside">
-                    Thêm đơn hàng
-                </button></a>
+
+        <div class="row mb-3">
+            <div class="col-6">
+                <a href="index.php?controller=donhang&action=hienThiTrangThemDonHang" target="_blank"><button type="button" class="btn btn-primary" aria-expanded="false" data-bs-auto-close="outside">
+                        Thêm đơn hàng
+                    </button></a>
+            </div>
+            <div class="col-6">
+                <form method="post" action="index.php?controller=donhang&action=timKiemDonHang">
+                    <div class="input-group">
+                        <input type="text" name="keyword" class="form-control" id="searchInput" placeholder="Nhập từ khóa" value="<?= isset($_POST['keyword']) ? $_POST['keyword'] : '' ?>">
+                        <input type="submit" class="btn btn-primary" name="search" value="Tìm kiếm">
+                    </div>
+                </form>
+            </div>
         </div>
-        <!-- <div class="row mb-3">
-        <div class="col-4">
-            <form method="post">
-                <div class="input-group">
-                    <input type="text" name="keyword" class="form-control" id="searchInput" placeholder="Nhập từ khóa">
-                    <input type="submit" class="btn btn-primary" name="search" value="Tìm kiếm">
-                </div>
-            </form>
-        </div>
-    </div> -->
-        <!-- Danh Sách Chờ Xác Nhận -->
         <!-- Modal Chi Tiết Đơn Hàng -->
         <div class="modal fade" id="orderDetailsModal" tabindex="-1" aria-labelledby="orderDetailsModalLabel" aria-hidden="true">
             <div class="modal-dialog modal-lg">
@@ -91,8 +90,46 @@
                 </div>
             </div>
         </div>
+
+        <!-- Modal chọn lý do từ chối -->
+        <div class="modal fade" id="lyDoTuChoiModal" tabindex="-1" aria-labelledby="lyDoTuChoiLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="lyDoTuChoiLabel">Chọn lý do từ chối</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="formLyDoTuChoi">
+                            <input type="hidden" id="maDonHangTuChoi" name="maDonHangTuChoi">
+                            <div class="mb-3">
+                                <label for="lyDoTuChoi" class="form-label">Lý do từ chối</label>
+                                <select id="lyDoTuChoi" class="form-select" name="lyDoTuChoi" required>
+                                    <option value="">-- Chọn lý do --</option>
+                                    <option value="Khách hàng yêu cầu hủy đơn">Khách hàng yêu cầu hủy đơn</option>
+                                    <option value="Hết món">Hết món</option>
+                                    <option value="Không thể giao hàng">Không thể giao hàng</option>
+                                    <option value="Khác">Khác</option>
+                                </select>
+                            </div>
+                            <div class="mb-3" id="lyDoKhacGroup" style="display: none;">
+                                <label for="lyDoKhac" class="form-label">Nhập lý do khác</label>
+                                <input type="text" class="form-control" id="lyDoKhac" name="lyDoKhac">
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                        <button type="button" class="btn btn-danger" onclick="xacNhanTuChoi()">Xác nhận từ chối</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Danh Sách Đang Chờ Xác Nhận -->
         <div class="mb-3">
             <h5>ĐANG CHỜ XÁC NHẬN</h5>
+            <div style="max-height: 1000px; overflow-y: auto;">
             <table class="table table-bordered" style="border:2px outset black;">
                 <thead>
                     <tr style="text-align:center;">
@@ -108,7 +145,12 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <?php foreach ($donHangsChoXacNhan as $donHang): ?>
+                    <?php if($donHangsChoXacNhan == null): ?>
+                        <tr>
+                            <td colspan="9" style="text-align:center;">Không có đơn hàng nào được gửi đến.</td>
+                        </tr>
+                    <?php else:  
+                    foreach ($donHangsChoXacNhan as $donHang): ?>
                         <tr>
                             <td><?= $donHang['maDonHang'] ?></td>
                             <td><?= $donHang['tenKH'] ?></td>
@@ -118,34 +160,37 @@
                             <td><?= number_format($donHang['tongTien'], 0, ',', '.') ?> VNĐ</td>
                             <td><?= $donHang['trangThaiThanhToan'] ?></td>
                             <td>
-                            <button
-                                    type="button" 
-                                    style="width:140px;" 
-                                    class="btn btn-info action-button" 
-                                    data-bs-toggle="modal" 
-                                    data-bs-target="#orderDetailsModal" 
+                                <button
+                                    type="button"
+                                    id="openModalButton"
+                                    style="width:140px;"
+                                    class="btn btn-info action-button"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#orderDetailsModal"
                                     onclick="loadOrderDetails('<?= $donHang['maDonHang'] ?>')">
                                     Xem chi tiết
                                 </button>
                             </td>
                             <td style="width:130px;">
-                                <a><button type="button" class="btn btn-success action-button" aria-expanded="false" data-bs-auto-close="outside">
+                                <a><button type="button" onclick="xacNhanDonHang('<?= $donHang['maDonHang'] ?>')" id="xacNhanDonHang" class="btn btn-success action-button" aria-expanded="false" data-bs-auto-close="outside">
                                         Xác nhận
                                     </button></a>
-                                <a><button type="button" class="btn btn-danger action-button" aria-expanded="false" data-bs-auto-close="outside">
+                                <a><button type="button" onclick="hienFormTuChoi('<?= $donHang['maDonHang'] ?>')" id="tuChoiDonHang" class="btn btn-danger action-button" aria-expanded="false" data-bs-auto-close="outside">
                                         Từ chối
                                     </button></a>
                             </td>
                         </tr>
-                    <?php endforeach; ?>
+                    <?php endforeach; endif;?>
+                   
                 </tbody>
             </table>
+            </div>
         </div>
-
         <hr>
         <!-- Danh Sách Đang Xử Lý -->
         <div class="mb-3">
             <h5>ĐANG XỬ LÝ</h5>
+            <div style="max-height: 1000px; overflow-y: auto;">
             <table class="table table-bordered" style="border:2px outset black;">
                 <thead>
                     <tr style="text-align:center;">
@@ -161,7 +206,12 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <?php foreach ($donHangsDangXuLy as $donHang): ?>
+                    <?php if($donHangsDangXuLy == null): ?>
+                        <tr>
+                            <td colspan="9" style="text-align:center;">Không có đơn hàng đang thực hiện nào.</td>
+                        </tr>
+                    <?php else: 
+                    foreach ($donHangsDangXuLy as $donHang): ?>
                         <tr>
                             <td><?= $donHang['maDonHang'] ?></td>
                             <td><?= $donHang['tenKH'] ?></td>
@@ -172,11 +222,12 @@
                             <td><?= $donHang['trangThaiDonHang'] ?></td>
                             <td>
                                 <button
-                                    type="button" 
-                                    style="width:140px;" 
-                                    class="btn btn-info action-button" 
-                                    data-bs-toggle="modal" 
-                                    data-bs-target="#orderDetailsModal" 
+                                    type="button"
+                                    style="width:140px;"
+                                    id="openModalButton"
+                                    class="btn btn-info action-button"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#orderDetailsModal"
                                     onclick="loadOrderDetails('<?= $donHang['maDonHang'] ?>')">
                                     Xem chi tiết
                                 </button>
@@ -185,7 +236,7 @@
                             <td style="width:170px;">
                                 <?php if ($donHang['trangThaiDonHang'] == 'Đang chuẩn bị'): ?>
                                     <a>
-                                        <button type="button" style="width: 140px; margin: 5px 10px;" class="btn btn-success action-button" aria-expanded="false" data-bs-auto-close="outside">
+                                        <button type="button" onclick="capNhatTTDonHang('<?= $donHang['maDonHang'] ?>', '<?= $donHang['trangThaiDonHang'] ?>')" style="width: 140px; margin: 5px 10px;" class="btn btn-success action-button" aria-expanded="false" data-bs-auto-close="outside">
                                             Giao hàng
                                         </button>
                                     </a>
@@ -195,7 +246,7 @@
                                         </button>
                                     </a>
                                     <a>
-                                        <button type="button" style="width: 140px; margin: 5px 10px;" class="btn btn-danger action-button" aria-expanded="false" data-bs-auto-close="outside">
+                                        <button type="button" onclick="hienFormTuChoi('<?= $donHang['maDonHang'] ?>')" style="width: 140px; margin: 5px 10px;" class="btn btn-danger action-button" aria-expanded="false" data-bs-auto-close="outside">
                                             Hủy đơn hàng
                                         </button>
                                     </a>
@@ -208,9 +259,9 @@
                                             Hoàn tiền
                                         </button>
                                     </a>
-                                <?php else: ?>
+                                <?php elseif ($donHang['trangThaiDonHang'] == 'Đang giao hàng'): ?>
                                     <a>
-                                        <button type="button" style="width: 140px; margin: 5px 10px;" class="btn btn-success action-button" aria-expanded="false" data-bs-auto-close="outside">
+                                        <button type="button" onclick="capNhatTTDonHang('<?= $donHang['maDonHang'] ?>', '<?= $donHang['trangThaiDonHang'] ?>')" style="width: 140px; margin: 5px 10px;" class="btn btn-success action-button" aria-expanded="false" data-bs-auto-close="outside">
                                             Hoàn thành
                                         </button>
                                     </a>
@@ -222,14 +273,17 @@
                                 <?php endif; ?>
                             </td>
                         </tr>
-                    <?php endforeach; ?>
+                    <?php endforeach; endif; ?>
+                
                 </tbody>
             </table>
+            </div>
         </div>
         <hr>
         <!-- Danh Sách Đã Xử Lý Xong -->
         <div class="mb-3">
             <h5>ĐÃ XỬ LÝ XONG</h5>
+            <div style="max-height: 500px; overflow-y: auto;">
             <table class="table table-bordered" style="border:2px outset black;">
                 <tr>
                     <th style="width:100px;">Mã đơn hàng</th>
@@ -239,8 +293,8 @@
                     <th style="width:100px;">Ngày tạo</th>
                     <th>Tổng tiền</th>
                     <th style="width:140px;">Trạng thái thanh toán</th>
+                    <th style="width:140px;">Trạng thái đơn hàng</th>
                     <th style="width:140px;">Chi tiết đơn hàng</th>
-                    <th>Hành động</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -253,29 +307,24 @@
                             <td><?= $donHang['ngayTao'] ?></td>
                             <td><?= number_format($donHang['tongTien'], 0, ',', '.') ?> VNĐ</td>
                             <td><?= $donHang['trangThaiThanhToan'] ?></td>
+                            <td><?= $donHang['trangThaiDonHang'] ?></td>
                             <td>
-                            <button
-                                    type="button" 
-                                    style="width:140px;" 
-                                    class="btn btn-info action-button" 
-                                    data-bs-toggle="modal" 
-                                    data-bs-target="#orderDetailsModal" 
+                                <button
+                                    type="button"
+                                    style="width:140px;"
+                                    id="openModalButton"
+                                    class="btn btn-info action-button"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#orderDetailsModal"
                                     onclick="loadOrderDetails('<?= $donHang['maDonHang'] ?>')">
                                     Xem chi tiết
                                 </button>
-                            </td>
-                            <td style="width:130px;">
-                                <a><button type="button" class="btn btn-success action-button" aria-expanded="false" data-bs-auto-close="outside">
-                                        Xác nhận
-                                    </button></a>
-                                <a><button type="button" class="btn btn-danger action-button" aria-expanded="false" data-bs-auto-close="outside">
-                                        Từ chối
-                                    </button></a>
                             </td>
                         </tr>
                     <?php endforeach; ?>
                 </tbody>
             </table>
+            </div>
         </div>
 
 

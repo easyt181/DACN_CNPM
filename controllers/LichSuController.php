@@ -18,7 +18,7 @@ class DanhGiaController {
             $soSao = $_POST['soSao'];
 
             // Gọi phương thức từ model để thêm đánh giá
-            if ($this->danhGiaModel->themDanhGia($maDonHang, $maKH, $noiDungDanhGia, $soSao)) {
+            if ($this->lichSuModel->themDanhGia($maDonHang, $maKH, $noiDungDanhGia, $soSao)) {
                 // Nếu thêm thành công, chuyển hướng hoặc thông báo
                 echo 'Đánh giá đã được gửi thành công!';
             } else {

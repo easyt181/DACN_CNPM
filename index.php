@@ -1,42 +1,55 @@
 <?php
+
+session_start();
+$_SESSION['maTaiKhoan'] = 'TK001';    
+$_SESSION['maQuyen'] = 'admin'; 
+
+
 date_default_timezone_set('Asia/Ho_Chi_Minh');
-require_once 'config/database.php';  // Kết nối cơ sở dữ liệu
+require_once 'config/database.php';  
 require_once 'controllers/QuanLyDonHangController.php';
 require_once 'controllers/QuanLyDonHangController.php';
 require_once 'controllers/GioHangController.php';
 require_once 'controllers/LichSuController.php';
 
-// require_once (__DIR__ . '\controllers\DonHangController.php');
-// require_once (__DIR__ . '/controllers/GioHangController.php');
-
-$controller = isset($_GET['controller']) ? $_GET['controller'] : 'trangchu';
-$action = isset($_GET['action']) ? $_GET['action'] : 'Home';
+$controller = isset($_GET['controller']) ? $_GET['controller'] : 'donhang';
+$action = isset($_GET['action']) ? $_GET['action'] : 'hienThiDanhSachDonHang';
 
 switch ($controller) {
     case 'donhang':
-        $donHangController = new QuanLyDonHangController($pdo);
-        if ($action == 'hienThiDanhSachDonHang') {
-            $donHangController->layDSDonHangTheoNhom();
+        $maTaiKhoanNV = $_SESSION['maTaiKhoan'];
+        if(isset($_SESSION['maTaiKhoan']) && isset($_SESSION['maQuyen']) && $_SESSION['maQuyen'] == 'admin'){
+            $donHangController = new QuanLyDonHangController($pdo);
+            if ($action == 'hienThiDanhSachDonHang') {
+                $donHangController->layDSDonHangTheoNhom();
+            }elseif($action == 'timKiemDonHang'){
+                $donHangController->timKiemDonHang();   
+            }elseif ($action == 'xacNhanDonHang'){
+                    $donHangController->xacNhanDonHang($maTaiKhoanNV);
+            }elseif ($action == 'hienThiTrangThemDonHang') {
+                $donHangController->hienThiTrangThemDonHang();
+            }elseif($action == 'layChiTietDonHang'){
+                $donHangController->layChiTietDonHang();
+            }elseif ($action == 'themDonHangQuanLy') {
+                $donHangController->themDonHangQuanLy();
+            }elseif($action == 'thanhToanQR'){
+                if(isset($_GET['maDonHang'])){
+                    $maDonHang = $_GET['maDonHang'];
+                    require_once 'views/ThanhToanQRCodeUI.php';
+                }
+                else {
+                    echo "Không tìm thấy mã đơn hàng.";
+                }
+            }elseif($action == 'capNhatTTDonHang'){
+                $donHangController->capNhatTTDonHang();
+            }elseif ($action == 'suaDonHang') {
+                $donHangController->suaDonHang($_GET['maDonHang']);
+            } elseif ($action == 'huyDonHang') {
+                $donHangController->huyDonHang($maTaiKhoanNV);
+            } 
+        } else {
+            echo "Bạn không có quyền truy cập vào trang này.";
         }
-        elseif ($action == 'hienThiTrangThemDonHang') {
-            $donHangController->hienThiTrangThemDonHang();
-        }elseif($action == 'layChiTietDonHang'){
-            $donHangController->layChiTietDonHang();
-        }elseif ($action == 'themDonHangQuanLy') {
-            $donHangController->themDonHangQuanLy();
-        }elseif($action == 'thanhToanQR'){
-            if(isset($_GET['maDonHang'])){
-                $maDonHang = $_GET['maDonHang'];
-                require_once 'views/ThanhToanQRCodeUI.php';
-            }
-            else {
-                echo "Không tìm thấy mã đơn hàng.";
-            }
-        }elseif ($action == 'suaDonHang') {
-            $donHangController->suaDonHang($_GET['maDonHang']);
-        } elseif ($action == 'huyDonHang') {
-            $donHangController->huyDonHang($_GET['maDonHang']);
-        } 
         break;
     case 'giohang':
         $gioHangController = new GioHangController($pdo);
