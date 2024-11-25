@@ -11,9 +11,13 @@ require_once 'controllers/QuanLyDonHangController.php';
 require_once 'controllers/QuanLyDonHangController.php';
 require_once 'controllers/GioHangController.php';
 require_once 'controllers/LichSuController.php';
+require_once 'controllers/ThucDonController.php';
+require_once 'controllers/LoginController.php';
+require_once 'models/LoginModel.php';
 
-$controller = isset($_GET['controller']) ? $_GET['controller'] : 'donhang';
-$action = isset($_GET['action']) ? $_GET['action'] : 'hienThiDanhSachDonHang';
+
+$controller = isset($_GET['controller']) ? $_GET['controller'] : 'thucdon';
+$action = isset($_GET['action']) ? $_GET['action'] : 'hienThiHome';
 
 switch ($controller) {
     case 'donhang':
@@ -74,8 +78,25 @@ switch ($controller) {
         if($action == 'Home'){
             require_once('views/TrangChu.php');
         }
+    case 'thucdon':
+        $thucDonController = new ThucDonController($pdo);
+            if ($action == 'hienThiHome') {
+            $thucDonController->hienThiDanhSachMonAnTrangChu();
+        }
+        break;
+    
+    case 'login':
+        $loginController = new LoginController($pdo);
+        if ($action === 'login') {
+            $loginController->login();
+        } elseif ($action === 'logout') {
+            $loginController->logout();
+        }
+        break;
+    
+    default:
+        header("Location: index.php?controller=thucdon&action=hienThiHome");
+        break;
         
 }
 ?>
-
-
