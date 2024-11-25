@@ -23,16 +23,31 @@ class HoaDon {
                 throw new Exception('Error executing SQL query.');
             }
         } catch (PDOException $e) {
-            // Bắt lỗi nếu có vấn đề với SQL
             echo "PDOException: " . $e->getMessage();
             return false;
         } catch (Exception $e) {
-            // Bắt lỗi chung nếu có lỗi ngoài SQL
             echo "Exception: " . $e->getMessage();
             return false;
         }
     }
-
-    
+    public function capNhatTTHoaDon($trangThaiHoaDon, $trangThaiHoanTien, $maDonHang) {
+        try {
+            $stmt = $this->db->prepare("
+                UPDATE HoaDon SET trangThaiHoaDon = ?, trangThaiHoanTien = ? WHERE maDonHang = ?
+            ");
+            $result = $stmt->execute([$trangThaiHoaDon, $trangThaiHoanTien, $maDonHang]);
+            if ($result) {
+                return true;
+            } else {
+                throw new Exception('Error executing SQL query.');
+            }
+        } catch (PDOException $e) {
+            echo "PDOException: " . $e->getMessage();
+            return false;
+        } catch (Exception $e) {
+            echo "Exception: " . $e->getMessage();
+            return false;
+        }
+    }
 }
 ?>

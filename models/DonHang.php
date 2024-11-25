@@ -7,12 +7,6 @@ class DonHang {
         $this->db = $pdo;
     }
 
-
-    public function xacNhanDonHang($maDonHang, $trangThaiMoi) {
-        $stmt = $this->db->prepare("UPDATE DonHang SET trangThaiDonHang = ? WHERE maDonHang = ?");
-        return $stmt->execute([$trangThaiMoi, $maDonHang]);
-    }
-
     public function themDonHang($data) {
         $query = "INSERT INTO donhang (maKH, maTaiKhoanNV, maUuDaiDH, ngayTao, phuongThucThanhToan, diaChiGiaoHang, khoangCachGiaoHang, phiShip, tongTienCongTru, tongTien, trangThaiThanhToan, trangThaiDonHang, ghiChu) 
                   VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)";
@@ -31,6 +25,19 @@ class DonHang {
         $maDonHang = $stmt->fetchColumn();
         return $maDonHang;
     }
+
+    public function capNhatTTDonHang($trangThaiThanhToan, $trangThaiMoi, $maDonHang): bool{
+        $stmt = $this->db->prepare("UPDATE DonHang SET trangThaiThanhToan = ?, trangThaiDonHang = ? WHERE maDonHang = ?");
+        $stmt->execute([$trangThaiThanhToan,$trangThaiMoi, $maDonHang]);
+        return true;    
+    }
+
+
+    public function xacNhanDonHang($maTaiKhoanNV, $maDonHang) {
+        $stmt = $this->db->prepare("UPDATE DonHang SET trangThaiDonHang = 'Đang chuẩn bị', maTaiKhoanNV = ? WHERE maDonHang = ?");
+        $stmt->execute([$maTaiKhoanNV, $maDonHang]);
+        return true;
+    }
     public function suaDonHang($maDonHang, $data) {
         $stmt = $this->db->prepare("
             UPDATE DonHang SET 
@@ -43,23 +50,61 @@ class DonHang {
         ]);
     }
 
-    public function huyDonHang($maDonHang) {
-        $stmt = $this->db->prepare("DELETE FROM DonHang WHERE maDonHang = ?");
-        return $stmt->execute([$maDonHang]);
+    public function huyDonHang($maTaiKhoanNV, $trangThaiDonHang, $ghiChu, $maDonHang) {
+        $stmt = $this->db->prepare("UPDATE DonHang SET maTaiKhoanNV = ?, trangThaiDonHang = ?, ghiChu = ?  WHERE maDonHang = ?");
+        $stmt->execute([$maTaiKhoanNV, $trangThaiDonHang, $ghiChu, $maDonHang]);
+        return true;
     }
 
-    public function timKiemDonHang($tuKhoa) {
-        $stmt = $this->db->prepare("SELECT * FROM DonHang WHERE maDonHang LIKE ? OR trangThaiDonHang LIKE ?");
-        $stmt->execute(['%' . $tuKhoa . '%', '%' . $tuKhoa . '%']);
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
-    }
 
-    public function kiemTraDonHang($maDonHang) {
-        $stmt = $this->db->prepare("SELECT COUNT(*) FROM donhang WHERE maDonHang = ?");
-        $stmt->execute([$maDonHang]);
-        $count = $stmt->fetchColumn();
-        return $count > 0;
-    }   
+    public function timKiemDonHang($nhomTrangThai, $tuKhoa) {
+        try {
+            // Câu truy vấn SQL với điều kiện tìm kiếm từ khóa
+            $query = "SELECT 
+                        donhang.maDonHang, 
+                        donhang.ngayTao, 
+                        donhang.diaChiGiaoHang,
+                        donhang.tongTien, 
+                        donhang.trangThaiThanhToan,
+                        donhang.trangThaiDonHang,
+                        hoadon.tenKH, 
+                        hoadon.sdt
+                      FROM donhang 
+                      INNER JOIN hoadon ON donhang.maDonHang = hoadon.maDonHang
+                      WHERE donhang.trangThaiDonHang IN (" . implode(", ", array_fill(0, count($nhomTrangThai), "?")) . ")";
+    
+            // Nếu từ khóa tìm kiếm không rỗng, thêm điều kiện vào câu truy vấn
+            if (!empty($tuKhoa)) {
+                $query .= " AND (hoadon.tenKH LIKE ? OR hoadon.sdt LIKE ? OR donhang.maDonHang LIKE ?)";
+            }
+    
+            // Chuẩn bị câu truy vấn
+            $stmt = $this->db->prepare($query);
+    
+            // Mảng các tham số đầu vào (trạng thái đơn hàng)
+            $params = $nhomTrangThai;
+    
+            // Nếu có từ khóa tìm kiếm, thêm vào mảng tham số
+            if (!empty($tuKhoa)) {
+                $searchTerm = "%" . $tuKhoa . "%";
+                $params = array_merge($params, [$searchTerm, $searchTerm, $searchTerm]);
+            }
+    
+            // Thực thi câu truy vấn với tham số
+            $stmt->execute($params);
+    
+            // Lấy kết quả trả về
+            $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            
+            return $result;
+    
+        } catch (PDOException $e) {
+            echo "Lỗi: " . $e->getMessage();
+            return [];
+        }
+    }
+    
+
 
     public function layDSDonHang($nhomTrangThai) {
         try {

@@ -84,7 +84,6 @@ try {
     $stmt->bindParam(':amount_in', $amount_in);
     $stmt->execute();
       
-
     if ($stmt->rowCount() > 0) {
         // Cập nhật trạng thái liên quan đơn hàng
         $updateStmt = $pdo->prepare("UPDATE donhang SET trangThaiThanhToan = 'Đã thanh toán' WHERE maDonHang = :pay_order_id");

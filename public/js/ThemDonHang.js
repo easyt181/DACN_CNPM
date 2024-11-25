@@ -4,9 +4,7 @@ let cart = [];
 // Tìm kiếm món ăn
 $('#btnSearch').click(function (event) {
     event.preventDefault(); 
-
     const keyword = $('#searchFood').val();
-
     $.ajax({
         url: 'controllers/TimKiemMonAn.php',
         method: 'GET',
@@ -93,10 +91,16 @@ $('#submitOrder').click(function (event) {
     event.preventDefault();
 
     if (cart.length === 0) {
-        alert('Giỏ hàng đang trống! Vui lòng thêm món ăn vào giỏ.');
+        Swal.fire({
+            title: 'Thông báo!',
+            text: `Giỏ hàng đang trống! Vui lòng thêm món ăn vào giỏ.`,
+            icon: 'warning', // Các loại icon: 'success', 'error', 'warning', 'info', 'question'
+            confirmButtonText: 'OK'
+        }).then(() => {
+
+        });
         return;
     }
-
     const dataToSend = {
         cartItems: cart, // Gửi toàn bộ giỏ hàng
         tenKH: document.getElementById('tenKH').value,
@@ -131,11 +135,25 @@ $('#submitOrder').click(function (event) {
                 if (result.success) {
                     const maDonHang = result.maDonHang;
                     if(result.PTTT == 'Thanh toán khi nhận hàng'){
-                        alert('Đơn hàng được tạo thành công!');
-                        window.location.href = 'index.php?controller=donhang&action=hienThiDanhSachDonHang';
+                        Swal.fire({
+                            title: 'Thành công!',
+                            text: `Đơn hàng được tạo thành công!`,
+                            icon: 'success', // Các loại icon: 'success', 'error', 'warning', 'info', 'question'
+                            confirmButtonText: 'OK'
+                          }).then(() => {
+                            window.location.href = 'index.php?controller=donhang&action=hienThiDanhSachDonHang';
+                          });
+                        
                     }else{
-                        alert('Đơn hàng được tạo thành công! Đến bước thanh toán qua QR code.');
-                        window.location.href = 'index.php?controller=donhang&action=thanhToanQR&maDonHang=' + maDonHang; 
+                        Swal.fire({
+                            title: 'Thành công!',
+                            text: `Đơn hàng được tạo thành công! Đến bước thanh toán qua QR code.`,
+                            icon: 'success', // Các loại icon: 'success', 'error', 'warning', 'info', 'question'
+                            confirmButtonText: 'OK'
+                          }).then(() => {
+                            window.location.href = 'index.php?controller=donhang&action=thanhToanQR&maDonHang=' + maDonHang;
+                          });
+                         
                     }
 
                 } else {

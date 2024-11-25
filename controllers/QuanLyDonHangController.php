@@ -28,6 +28,18 @@ class QuanLyDonHangController {
         require_once 'views/QuanLyDonHangUI/DanhSachDonHangUI.php';
     }
 
+    public function timKiemDonHang() {
+        if (isset($_POST['search'])) {
+            $keyword = $_POST['keyword'];
+            $nhomChoXacNhan = ['Đang chờ xác nhận'];    
+            $nhomDangXuLy = ['Đang chuẩn bị', 'Đang giao hàng', 'Đang chờ hoàn tiền - Đã bị hủy bởi khách hàng', 'Đang chờ hoàn tiền - Đã bị hủy bởi quản lý',];
+            $nhomDaXuLyXong = ['Đã hoàn thành','Đã bị hủy bởi khách hàng','Đã bị hủy bởi quản lý', 'Đã hoàn tiền', 'Đơn hàng rủi ro'];
+            $donHangsChoXacNhan = $this->donHangModel->timKiemDonHang($nhomChoXacNhan, $keyword);
+            $donHangsDangXuLy = $this->donHangModel->timKiemDonHang($nhomDangXuLy, $keyword);
+            $donHangsDaXuLyXong = $this->donHangModel->timKiemDonHang($nhomDaXuLyXong, $keyword);
+            include 'views/QuanLyDonHangUI/DanhSachDonHangUI.php';  // Giả sử bạn đang trả về view này
+        }
+    }
     // Hiển thị form thêm đơn hàng
     public function hienThiTrangThemDonHang() {
         require_once 'views/QuanLyDonHangUI/ThemDonHangUI.php';
@@ -61,7 +73,6 @@ class QuanLyDonHangController {
             echo json_encode(['success' => false, 'message' => 'Dữ liệu không hợp lệ.']);
             return;
         }
-    
         $cartItems = $inputData['cartItems'];
         $sdt = $inputData['sdt'];
         $tenKH = $inputData['tenKH'];
@@ -75,7 +86,6 @@ class QuanLyDonHangController {
         $ghiChu = $inputData['ghiChu'] ?? null; 
         
         try {
-            // Kiểm tra khách hàng đã tồn tại
             $khachHang = $this->khachHangModel->kiemTraKH($sdt);
             if (!$khachHang) {
                 $dataKH = [
@@ -132,7 +142,6 @@ class QuanLyDonHangController {
                 ];
                 $this->chiTietDonHangModel->themChiTietDonHang($dataChiTietDonHang);
             }
-            
             $dataHoaDon = [
                 'maDonHang' => $maDonHang,
                 'sdt' => $sdt,
@@ -144,7 +153,9 @@ class QuanLyDonHangController {
                 'trangThaiHoaDon' => $trangThaiHoaDon,
                 'trangThaiHoanTien' => '0',
             ];
+
             $this->hoaDonModel->themHoaDon($dataHoaDon);
+            
             echo json_encode(['success' => true, 'message' => 'Đơn hàng đã được tạo thành công .','PTTT' => $phuongThucThanhToan, 'maDonHang' => $maDonHang]);
             
         } catch (Exception $e) {
@@ -154,31 +165,90 @@ class QuanLyDonHangController {
     
     
     
-    
+    // Xác nhận đơn hàng
+    public function xacNhanDonHang($maTaiKhoanNV) {
+        header('Content-Type: application/json; charset=utf-8');
+        $data = json_decode(file_get_contents("php://input"), true);
+        $maDonHang = $data['maDonHang'];
+        try{
+            $this->donHangModel->xacNhanDonHang( $maTaiKhoanNV, $maDonHang);
+            echo json_encode(['success' => true, 'message' => 'Xác nhận đơn hàng thành công.']);
+        } catch (Exception $e) {
+            echo json_encode(['success' => false, 'message' => 'Lỗi: ' . $e->getMessage()]);
+        }
+
+        // Cần gửi thêm thông báo cho khách hàng
+    }
+
+
+    public function capNhatTTDonHang(){
+        header('Content-Type: application/json; charset=utf-8');
+        $data = json_decode(file_get_contents("php://input"), true);
+        $maDonHang = $data['maDonHang'];
+        $trangThaiDonHang = $data['trangThaiDonHang'];
+        $dataDonHang = $this->donHangModel->layDonHangTheoMa($maDonHang); 
+        try{  
+            if($trangThaiDonHang == 'Đang chuẩn bị'){
+                $trangThaiMoi = 'Đang giao hàng';
+                $trangThaiThanhToan = $dataDonHang['trangThaiThanhToan'];
+                $this->donHangModel->capNhatTTDonHang($trangThaiThanhToan,$trangThaiMoi, $maDonHang);
+                echo json_encode(['success' => true, 'message' => 'Cập nhật trạng thái đơn hàng thành công.']);
+            }elseif($trangThaiDonHang == 'Đang giao hàng'){
+                $trangThaiMoi = 'Đã hoàn thành';
+                if($dataDonHang['trangThaiThanhToan'] == 'Chưa thanh toán'){
+                    $trangThaiThanhToan = 'Đã thanh toán';
+                    $trangThaiHoaDon = 'Đã thanh toán';
+                    $this->donHangModel->capNhatTTDonHang($trangThaiThanhToan, $trangThaiMoi, $maDonHang);
+                    $this->hoaDonModel->capNhatTTHoaDon($trangThaiHoaDon, '0', $maDonHang);
+                    echo json_encode(['success' => true, 'message' => 'Cập nhật trạng thái đơn hàng thành công.']);
+                }elseif($dataDonHang['trangThaiThanhToan'] == 'Đã thanh toán'){
+                    $trangThaiThanhToan = $dataDonHang['trangThaiThanhToan'];
+                    $this->donHangModel->capNhatTTDonHang($trangThaiThanhToan, $trangThaiMoi, $maDonHang);
+                    echo json_encode(['success' => true, 'message' => 'Cập nhật trạng thái đơn hàng thành công.']);
+                }
+            
+        }
+        }catch (Exception $e) {
+            echo json_encode(['success' => false, 'message' => 'Lỗi: ' . $e->getMessage()]);
+        }
+        // Cần gửi thêm thông báo cho khách hàng
+    }
+    // Hủy đơn hàng
+    public function huyDonHang($maTaiKhoanNV) {
+        header('Content-Type: application/json; charset=utf-8');
+        $data = json_decode(file_get_contents("php://input"), true);
+        $maDonHang = $data['maDonHang'];
+        $lyDo = $data['lyDo']; 
+        $ghiChu = 'Đã bị hủy bởi quản lý '.$maTaiKhoanNV.' với lý do: '.$lyDo;
+        $dataDonHang = $this->donHangModel->layDonHangTheoMa($maDonHang);
+        if($dataDonHang['trangThaiThanhToan'] == 'Đã thanh toán'){ 
+            $trangThaiDonHang = 'Đang chờ hoàn tiền - Đã bị hủy bởi quản lý';
+            $trangThaiHoaDon = 'Đã hủy - Hoàn tiền';
+            $trangThaiHoanTien = '1';  
+            $this->hoaDonModel->capNhatTTHoaDon($trangThaiHoaDon, $trangThaiHoanTien, $maDonHang); 
+        }else{
+            $trangThaiDonHang = 'Đã bị hủy bởi quản lý';
+            $trangThaiHoaDon = 'Đã hủy';
+            $trangThaiHoanTien = '0';
+            $this->hoaDonModel->capNhatTTHoaDon($trangThaiHoaDon, $trangThaiHoanTien, $maDonHang); 
+        }
+        try{
+            $this->donHangModel->huyDonHang($maTaiKhoanNV, $trangThaiDonHang, $ghiChu, $maDonHang);
+            echo json_encode(['success' => true, 'message' => 'Từ chối đơn hàng thành công.']);
+        } catch (Exception $e) {
+            echo json_encode(['success' => false, 'message' => 'Lỗi: ' . $e->getMessage()]);
+        }
+        // Cần gửi thêm thông báo cho khách hàng    
+    }
+
+
 
     // Sửa đơn hàng
     public function suaDonHang($maDonHang) {
-        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $data = [
-                'phuongThucThanhToan' => $_POST['phuongThucThanhToan'],
-                'diaChiGiaoHang' => $_POST['diaChiGiaoHang'],
-                'tongTienCongTru' => $_POST['tongTienCongTru'],
-                'tongTien' => $_POST['tongTien'],
-                'ghiChu' => $_POST['ghiChu']
-            ];
-            $this->donHangModel->suaDonHang($maDonHang, $data);
-            header('Location: index.php?controller=donhang&action=index');
-        } else {
-            $donHang = $this->donHangModel->timKiemDonHang($maDonHang)[0];
-            require_once 'views/donhang/sua.php';
-        }
+
     }
 
-    // Hủy đơn hàng
-    public function huyDonHang($maDonHang) {
-        $this->donHangModel->huyDonHang($maDonHang);
-        header('Location: index.php?controller=donhang&action=index');
-    }
+    
 }
 ?>
 
