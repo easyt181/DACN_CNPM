@@ -1,6 +1,6 @@
 <?php
 date_default_timezone_set('Asia/Ho_Chi_Minh');
-require_once 'config/database.php';  // Kết nối cơ sở dữ liệu
+require_once 'config/database.php';  
 require_once 'controllers/QuanLyDonHangController.php';
 require_once 'controllers/GioHangController.php';
 
