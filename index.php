@@ -1,8 +1,5 @@
 <?php
 
-session_start();
-$_SESSION['maTaiKhoan'] = 'TK001';    
-$_SESSION['maQuyen'] = 'admin'; 
 
 
 date_default_timezone_set('Asia/Ho_Chi_Minh');
@@ -17,6 +14,9 @@ $action = isset($_GET['action']) ? $_GET['action'] : 'hienThiDanhSachDonHang';
 
 switch ($controller) {
     case 'donhang':
+        session_start(); // Tạm thời chưa có đăng nhập
+        $_SESSION['maTaiKhoan'] = 'TK001';    
+        $_SESSION['maQuyen'] = 'admin'; 
         $maTaiKhoanNV = $_SESSION['maTaiKhoan'];
         if(isset($_SESSION['maTaiKhoan']) && isset($_SESSION['maQuyen']) && $_SESSION['maQuyen'] == 'admin'){
             $donHangController = new QuanLyDonHangController($pdo);

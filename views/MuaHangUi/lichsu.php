@@ -3,10 +3,8 @@
 $servername = "localhost";
 $username = "root";
 $password = "";
-$port = 3308;
 $database = "db_nhom5_dacn";
-
-$conn = new mysqli($servername, $username, $password, $database, $port);
+$conn = new mysqli($servername, $username, $password, $database);
 
 // Kiểm tra kết nối
 if ($conn->connect_error) {
