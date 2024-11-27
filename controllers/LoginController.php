@@ -73,7 +73,7 @@ class LoginController {
                             'tenKH' => $data['tenDangNhap'],
                             'sdt' => $data['sdt'],
                             'email' => $data['email'],
-                            'diaChi' => null
+                            'diaChi' => ''
 
                         ];
                         $this->khachHangModel->themKH($dataKH);
