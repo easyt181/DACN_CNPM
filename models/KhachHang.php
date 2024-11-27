@@ -26,7 +26,6 @@ class KhachHang {
         return true;
     }
 
-    // Sửa thông tin khách hàng
     public function suaKH($maKH, $data) {
         $sql = "UPDATE khachhang 
                 SET maTaiKhoan = ?, tenKH = ?, sdt = ?, email = ?, diaChi = ?

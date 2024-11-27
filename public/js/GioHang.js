@@ -106,6 +106,7 @@ function getTTDH(data) {
         phuongThuc = 'Thanh toán khi nhận hàng';
     } else if (selectedRadio === 'flexRadioDefault2') {
         phuongThuc = 'Thanh toán qua QRCode';
+
     }
 
     let tongTienNum = parseFloat(tongTien_.replace(/[.,]/g, "").replace(" VND", ""));
@@ -116,10 +117,14 @@ function getTTDH(data) {
     TTDH_.tongTien = tongTienNum;
     TTDH_.phuongThuc = phuongThuc;
     TTDH_.ghiChu = ghiChu;
+    let HD_ = data.HD;
+    HD_.ngayTao = new Date();
+    HD_.tongTien = tongTienNum;
+    HD_.phuongThucThanhToan = phuongThuc;    
     $.ajax({
         url: "index.php?controller=giohang&action=themDonHangKH",
         type: "POST",
-        data: JSON.stringify({TTDH: TTDH_, CTDH: data.CTDH}),
+        data: JSON.stringify({TTDH: TTDH_, CTDH: data.CTDH, HD: HD_}),
         contentType: "application/json",
         success: function (response) {
             const data = JSON.parse(response);
@@ -130,6 +135,7 @@ function getTTDH(data) {
                 alert('Đơn hàng được tạo thành công! Đến bước thanh toán qua QR code.');
                 window.location.href = 'index.php?controller=donhang&action=thanhToanQR&maDonHang=' + data.maDonHang; 
             }
+            document.cookie = "cart=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC;";
         },
         error: function (err) {
             console.error("Error:", err);
@@ -154,4 +160,101 @@ function showConfirmation(TTDH) {
     });
 }
 
+function thayDoiTT() {
+    const tenKH = $('.tenKh').text();
+    const sdt = $('.sdtKh').text();
+    const diachi = $('.diaChi-span').text();
 
+    $('.modal__thongTinKH__tenKH-input').val(tenKH);
+    $('.modal__thongTinKH__sdtKH-input').val(sdt);
+    $('.modal__thongTinKH__diaChi-input').val(diachi);
+
+}
+// Hàm tìm kiếm và hiển thị gợi ý địa chỉ
+async function searchLocation() {
+    const query = document.querySelector('.modal__thongTinKH__diaChi-input').value; // Lấy giá trị từ input
+    const suggestionsContainer = document.getElementById('suggestions');
+    suggestionsContainer.innerHTML = ''; // Xóa các gợi ý cũ
+    suggestionsContainer.style.display = 'none'; // Ẩn gợi ý nếu không có kết quả
+
+    if (!query) return; // Nếu không có giá trị nhập vào thì không tìm kiếm
+
+    const url = `https://rsapi.goong.io/Place/AutoComplete?api_key=${goongApiKey}&input=${encodeURIComponent(query)}`;
+
+    try {
+        const response = await fetch(url); // Gửi yêu cầu API Goong
+
+        if (!response.ok) {
+            throw new Error(`API request failed with status ${response.status}`);
+        }
+
+        const data = await response.json(); // Nhận dữ liệu từ API
+
+        if (data.predictions && data.predictions.length > 0) {
+            suggestionsContainer.style.display = 'block'; // Hiển thị các gợi ý
+
+            data.predictions.forEach(place => {
+                const suggestion = document.createElement('div');
+                suggestion.classList.add('suggestion');
+                suggestion.textContent = place.description; // Hiển thị tên địa chỉ trong gợi ý
+
+                // Sự kiện khi nhấn vào gợi ý
+                suggestion.onclick = () => {
+                    document.querySelector('.modal__thongTinKH__diaChi-input').value = place.description; // Thay đổi giá trị của input
+                    suggestionsContainer.innerHTML = ''; // Xóa gợi ý sau khi chọn
+                    suggestionsContainer.style.display = 'none'; // Ẩn container gợi ý
+                };
+
+                suggestionsContainer.appendChild(suggestion); // Thêm gợi ý vào container
+            });
+        } else {
+            alert("Không tìm thấy kết quả phù hợp.");
+        }
+    } catch (error) {
+        console.error('Lỗi khi tìm kiếm địa chỉ:', error);
+        alert("Đã xảy ra lỗi khi tìm kiếm. Vui lòng thử lại sau.");
+    }
+}
+
+
+// Hàm debounce giúp giảm tần suất gọi API
+const debouncedSearchLocation = debounce(searchLocation, 500); // 500ms trì hoãn
+
+// Sự kiện oninput để gọi hàm searchLocation khi người dùng nhập vào ô input
+document.getElementById('diaChiGiaoHang').oninput = debouncedSearchLocation;
+
+function xacNhanThayDoiDC(maKH) {
+    const diachi = $('.diaChi-span').text();
+    const diaChi =  $('.modal__thongTinKH__diaChi-input').val();
+
+    $.ajax({
+        url: "index.php?controller=giohang&action=thayDoiDiaChi",
+        type: "POST",
+        data: JSON.stringify({diaChi : diaChi, tenKH : tenKH}),
+        contentType: "application/json",
+        success: function (response) {
+            const is_thayDoi = JSON.parse(response);
+            if(is_thayDoi){
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Đăng ký thành công!',
+                    text: 'Chúc mừng bạn đã đăng ký thành công.'
+                  }).then(() => {
+                        location.reload();
+                  });
+            }else{
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Đã có lỗi xảy ra',
+                    text: 'Vui lòng thử lại sau.'
+                  }).then(()=>{
+                    $('.modal__thongTinKH__diaChi-input').val(diachi);
+                  })
+            }
+        },
+        error: function (err) {
+            console.error("Error:", err);
+        }
+    });
+
+}

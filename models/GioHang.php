@@ -18,8 +18,17 @@ class GioHangModel {
         ]);
         return true;
     }
-    public function LayMaDHNgayTao() {
-        
+    public function ThayDoiDiaChi($diaChi, $tenKH) {
+        $query = 'UPDATE khachhang SET diaChi = ? WHERE maKH = ?';
+
+        $stmt = $this->db->prepare($query);
+        try {
+            $stmt->execute([$diaChi, $tenKH]);
+            return true;
+        }catch (PDOException $e) {
+            echo "Lỗi kiểm tra dữ liệu: " . $e->getMessage();
+            return false;
+        }
     }
 }
 

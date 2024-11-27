@@ -1,6 +1,5 @@
 <?php
 
- 
 
 
 date_default_timezone_set('Asia/Ho_Chi_Minh');
@@ -17,10 +16,13 @@ require_once 'models/LoginModel.php';
 $controller = isset($_GET['controller']) ? $_GET['controller'] : 'thucdon';
 $action = isset($_GET['action']) ? $_GET['action'] : 'hienThiHome';
 
+session_start();
+
+
 switch ($controller) {
     case 'donhang':
         $maTaiKhoanNV = $_SESSION['maTaiKhoan'];
-        if(isset($_SESSION['maTaiKhoan']) && isset($_SESSION['maQuyen']) && $_SESSION['maQuyen'] == 'admin'){
+        if(isset($_SESSION['maTaiKhoan']) && isset($_SESSION['maQuyen']) && strtolower($_SESSION['maQuyen']) == 'admin'){
             $donHangController = new QuanLyDonHangController($pdo);
             if ($action == 'hienThiDanhSachDonHang') {
                 $donHangController->layDSDonHangTheoNhom();
@@ -54,13 +56,18 @@ switch ($controller) {
         }
         break;
     case 'giohang':
-        $gioHangController = new GioHangController($pdo);
-        if ($action == 'hienThiGioHang'){
-            $gioHangController->hienThiGioHang();
-        }elseif($action == 'themDonHangKH'){
-            $gioHangController->insert_DH();
-        }elseif($action == 'xoaGioHang'){
-            $gioHangController->remove();
+        $maTaiKhoanNV = $_SESSION['maTaiKhoan'];
+        if(isset($_SESSION['maTaiKhoan']) && isset($_SESSION['maQuyen']) && strtolower($_SESSION['maQuyen']) == 'khachhang'){
+            $gioHangController = new GioHangController($pdo);
+            if ($action == 'hienThiGioHang'){
+                $gioHangController->hienThiGioHang();
+            }elseif($action == 'themDonHangKH'){
+                $gioHangController->insert_DH();
+            }elseif($action == 'xoaGioHang'){
+                $gioHangController->remove();
+            }elseif($action == 'thayDoiDiaChi'){
+                $gioHangController->thayDoiDiaChi();
+            }
         }
     case 'danhgia':
         $danhGiaController = new DanhGiaController($pdo);
@@ -89,7 +96,17 @@ switch ($controller) {
             $loginController->login();
         } elseif ($action === 'logout') {
             $loginController->logout();
+        }elseif ($action == 'dangKyKH') {
+            $is_DangKy = $loginController->DangKyKH();  // Thực hiện đăng ký
+            if($is_DangKy) {
+                header("Location: index.php?controller=login&action=login&message=thanhCong");
+                exit();  
+            } else {
+                header("Location: index.php?controller=login&action=login&message=thatBai");
+                exit();  
+            }
         }
+        
         break;
     
     default:

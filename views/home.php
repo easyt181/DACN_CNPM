@@ -7,6 +7,11 @@
 <?php else: ?>
 <a href="index.php?controller=login&action=login">Đăng nhập</a>
 <?php endif; ?> -->
+
+
+
+
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -51,7 +56,8 @@
             <div class="icons">
                 <div id="menu-btn" class="fas fa-bars"></div>
                 <div id="search-btn" class="fas fa-search"></div>
-                <div id="cart-btn" class="fas fa-shopping-cart"></div>
+                <a href="index.php?controller=giohang&action=hienThiGioHang" style="display: inline-block;"><div id="cart-btn" class="fas fa-shopping-cart" >
+                </div></a>
 
                 <?php if (isset($_SESSION['tenDangNhap'])): ?>
 

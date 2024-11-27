@@ -7,7 +7,7 @@ function huydonhang(data) {
         })
         .then(response => response.text())
         .then(data => {  
-            location.reload(); 
+            // location.reload(); 
         })
         .catch(error => console.error('Error:', error));
 }

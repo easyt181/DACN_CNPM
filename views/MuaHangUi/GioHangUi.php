@@ -21,7 +21,12 @@ foreach ($cart as $item){
     array_push($CTDH,['maMonAn'=>$item['maMonAn'],'soLuong'=> $item['soLuong'],'donGia'=> $item['gia']]);
     $tongTien += (int)$item['gia'] * (int)$item['soLuong'];
 }
-
+$HD = [
+    'maKH' => $KH['maKH'], 
+    'sdt'=>$KH['sdt'], 
+    'tenKH'=>$KH['tenKH'],
+    'diaChiGiaoHang'=>$KH['diaChi'],
+];
 
 
 ?>
@@ -41,11 +46,11 @@ foreach ($cart as $item){
     <div class="container">
         <div class="TTKH">
             <div class="row title">
-                <h2>Đơn hàng</h2>
-                <div class="title__prev">
-                    <i class="bi bi-arrow-left-short"></i>
-                    <p><a href="../Test/index.php" class="btn ">Quay lại</a></p>
-                </div>
+                <h2>Giỏ hàng</h2>
+                <a class="title__prev" href="index.php?controller=thucDon&action=hienThiHome" class="btn ">
+                    <!-- <i class="bi bi-arrow-left-short"></i> -->
+                    <p>Quay lại</p>
+                </a>
             </div>
             <div class="row container_TTKH">
             <div class="col">
@@ -58,10 +63,10 @@ foreach ($cart as $item){
                     <div class="line"></div>
                     <div class="sdtKh"><?php echo $KH['sdt'];?></div>
                 </div>
-                <div class="diaChi"><span>Địa chỉ:</span> <span id="address-span"><?php echo $KH['diaChi']?></span></div>
+                <div class="diaChi"><span>Địa chỉ:</span> <span id="address-span" class="diaChi-span"><?php echo $KH['diaChi']?></span></div>
 
             </div>
-            <div class="col btn_TTKH"><a href="#">Thay đổi</a></div>
+            <div class="col-2 btn_TTKH"><a href="#" type="button" class="title__thayDoi" data-bs-toggle="modal" data-bs-target="#thayDoiThongTinKH" onclick="thayDoiTT()">Thay đổi</a></div>
         </div>
         </div>
         <div class="row container_TTmonAn">
@@ -136,7 +141,7 @@ foreach ($cart as $item){
                 </div>
                 <div class="btn_thanhToan">
                 <button type="button" class="btn btn-danger" 
-                    onclick="showConfirmation(<?php $data = ['TTDH' => $TTDH,'CTDH' => $CTDH]; echo htmlspecialchars(json_encode($data),ENT_QUOTES, 'UTF-8'); ?>)">
+                    onclick="showConfirmation(<?php $data = ['TTDH' => $TTDH,'CTDH' => $CTDH, 'HD'=>$HD]; echo htmlspecialchars(json_encode($data),ENT_QUOTES, 'UTF-8'); ?>)">
                     Thanh toán
                 </button>
 
@@ -179,6 +184,41 @@ foreach ($cart as $item){
             </div>
         </div>
     </div>
+    <!-- Thay doi thong tin kh -->
+    <div class="modal fade" id="thayDoiThongTinKH" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="exampleModalLabel">Thông tin khách hàng</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body modal__thongTinKH">
+                <div class="input-group mb-3">
+                    <div>
+                        <p>Tên khách hàng</p>
+                        <input type="text" class="form-control modal__thongTinKH__tenKH-input" placeholder="Tên khách hàng" aria-label="Username" aria-describedby="basic-addon1">
+                    </div>
+                    <div>
+                        <p>Số điện thoại</p>
+                        <input type="text" class="form-control modal__thongTinKH__sdtKH-input" placeholder="Số điện thoại" aria-label="Username" aria-describedby="basic-addon1">
+                    </div>
+                    </div>
+                <div type="text" class="input-group mb-3 modal__thongTinKH__diaChi">
+                    <div>
+                        <p>Địa chỉ</p>
+                        <input type="text" class="form-control modal__thongTinKH__diaChi-input" placeholder="Địa chỉ" aria-label="Username" aria-describedby="basic-addon1" oninput="searchLocation()">
+                    </div>
+                    <div id="suggestions">
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" onclick="xacNhanThayDoiDC()">Xác nhận</button>
+            </div>
+            </div>
+        </div>
+        </div>
+
 </body>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
