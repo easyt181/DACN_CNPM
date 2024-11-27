@@ -21,6 +21,9 @@ session_start();
 
 switch ($controller) {
     case 'donhang':
+        session_start(); // Tạm thời chưa có đăng nhập
+        $_SESSION['maTaiKhoan'] = 'TK001';    
+        $_SESSION['maQuyen'] = 'admin'; 
         $maTaiKhoanNV = $_SESSION['maTaiKhoan'];
         if(isset($_SESSION['maTaiKhoan']) && isset($_SESSION['maQuyen']) && strtolower($_SESSION['maQuyen']) == 'admin'){
             $donHangController = new QuanLyDonHangController($pdo);
