@@ -94,7 +94,7 @@ window.onclick = function(event) {
                     <input type="password" placeholder="Password" name="matKhau" id="matKhau" autocomplete="off" required>
                     <label></label>
                 </div>
-                <a href="#" class="forgot">Bạn quên mật khẩu?</a>
+                <a href="index?controller=login&action=hienThiLayLaiMK" class="forgot">Bạn quên mật khẩu?</a>
                 <button type="submit">Đăng nhập</button>
             </form>
         </div>

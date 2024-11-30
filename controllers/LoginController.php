@@ -16,7 +16,6 @@ class LoginController {
             // Tìm tài khoản trong cơ sở dữ liệu
             $taiKhoan = $this->taiKhoanModel->findByUsername($tenDangNhap);
             if ($taiKhoan && $taiKhoan['matKhau'] === $matKhau) {
-                // Lưu thông tin đăng nhập vào session
                 session_start();
                 $_SESSION['tenDangNhap'] = $taiKhoan['tenDangNhap'];
                 $_SESSION['maQuyen'] = $taiKhoan['maQuyen'];
@@ -60,7 +59,7 @@ class LoginController {
                         'matKhau' => $matKhau,
                         'email' => $email,
                         'sdt' => $sdt,
-                        'trangThai' => 'Đang hoạt động'
+                        'trangThai' => 'Kích hoạt'
                     ];
                 $is_tenDangNhap = $this->taiKhoanModel->kiemTraTK($data); 
                 if(!$is_tenDangNhap){
@@ -90,7 +89,47 @@ class LoginController {
         }
         
     }
-    
+    public function hienThiLayLaiMK()  {
+        require_once('views/loginUi/LayLaiMK.php');
+    }
+    public function LayLaiMK()  {
+        if (isset($_GET['controller']) && $_GET['controller'] === 'login' && $_GET['action'] === 'guiEmail') {
+            if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+                $email = $_POST['email'];
+                $is_true = $this->taiKhoanModel->kiemTraEmail($email);
+                if($is_true) {
+                    $token = bin2hex(random_bytes(16));
+                    $token_hash = hash("sha256", $token);
+                    $expiry = date("Y-m-d H:i:s", time() + 60*30);
+                    $is_true = $this->taiKhoanModel->LayLaiMK($email, $token_hash, $expiry);
+                    $phpMail = new PHPMailer();
+                    $phpMail->guiMail($token_hash);
+                    return $is_true;
+                }
+            }
+        }
+        return false;
+       
+    }
+    public function hienThiThayDoiMK(){
+        $token = $_GET['token'];
+        $thoiHan = $this->taiKhoanModel->kiemTraThoiHan($token)['hetHanToken'];
+        require_once('views/loginUi/ThayDoiMK.php');
+        
+    }
+    public function thayDoiMK()  {
+        if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+            $token = $_POST['token'];
+            $matKhau = $_POST['matKhau'];
+            $thoiHan = $_POST['thoiHan'];
+            $dateNow = date('Y-m-d H:i:s');
+            if (strtotime($dateNow) > strtotime($thoiHan)) {
+                return false;
+            }
+            $this->taiKhoanModel->thayDoiMK($token, $matKhau);
+            return true;
+        }
+    }
     
 }
 ?>

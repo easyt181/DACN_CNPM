@@ -1,34 +1,11 @@
 <?php
-session_start(); 
+
 $cart = isset($_COOKIE['cart']) ? json_decode($_COOKIE['cart'], true) : [];
-// $gioHangController = new GioHangController();
-
-if (isset($_SESSION['KH'])) {
-    $KH = $_SESSION['KH'];
-} 
-$soLuongMon = count($cart);
-$maKh = $KH['maKH'];
-$ngayTao = date('Y-m-d H:i:s');
-$diaChi = $KH['diaChi'];
-$TTDH = [
-    'maKH' => $maKh,
-    'diaChi' => $diaChi,
-    'ngayTao' => $ngayTao,
-];
-$CTDH = [];
-$tongTien = 0;
-foreach ($cart as $item){
-    array_push($CTDH,['maMonAn'=>$item['maMonAn'],'soLuong'=> $item['soLuong'],'donGia'=> $item['gia']]);
-    $tongTien += (int)$item['gia'] * (int)$item['soLuong'];
-}
-$HD = [
-    'maKH' => $KH['maKH'], 
-    'sdt'=>$KH['sdt'], 
-    'tenKH'=>$KH['tenKH'],
-    'diaChiGiaoHang'=>$KH['diaChi'],
-];
-
-
+$gioHangController = new GioHangController();
+$CTDH = $gioHangController->thongTinGioHang();
+$KH = $_SESSION['KH'];
+$lastElement = end($CTDH); 
+$tongTien = !empty($CTDH) ? $lastElement['tongTien'] : 0;
 ?>
 
 <!DOCTYPE html>
@@ -41,6 +18,10 @@ $HD = [
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link rel="stylesheet" href="./public/css/GioHang.css">
+
+    
+    <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11.6.10/dist/sweetalert2.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.6.10/dist/sweetalert2.min.js"></script>
 </head>
 <body>
     <div class="container">
@@ -73,15 +54,20 @@ $HD = [
             <div class="col ">
                <?php
                if(!empty($cart)) {
+                $count_item = 0;
                 foreach ($cart as $item) {
                     echo ' <div class="monAn"> 
                     <div class="row">
-                        <div class="col TTMon">
-                            <img class="img_monAn" src="https://static.kinhtedothi.vn/w960/images/upload/2022/09/16/phobohanoi.jpg" class="rounded float-start" alt="'.htmlentities($item['tenMonAn']).'">
+                        <div class="col TTMon TTMon_'. $count_item .'">
+                            <img class="img_monAn" src="'.htmlentities($item['hinhAnhMonAn']).'" class="rounded float-start" alt="'.htmlentities($item['tenMonAn']).'">
                             <div class="TTmonAn">
                                 <div class="tenMon">'.htmlentities($item['tenMonAn']).'</div>
                                 <div class="gia">'.htmlentities(number_format((int)$item['gia'])).' VND</div>
-                                <div class="soLuong">x'.htmlentities($item['soLuong']).'</div>
+                                <div class="soLuong">
+                                <div class="soLuong_btn soLuong_btn-tru" data-item="'.$count_item.'"><i class="bi bi-dash-circle-fill"></i></div>
+                                <div class="soLuong_text">x<span class="soLuong_text-span">'.htmlentities($item['soLuong']).'</span></div>
+                                <div class="soLuong_btn soLuong_btn-cong" data-item="'.$count_item.'"><i class="bi bi-plus-circle-fill"></i></div>
+                                </div>
                             </div>
                         </div>
                         <div class="col huy">
@@ -94,7 +80,7 @@ $HD = [
                         </div>
                     </div>
                 </div>';
-            
+                $count_item+=1;
                 }
                }
                else{
@@ -106,7 +92,7 @@ $HD = [
             <div class="col-4 thanhToan">
                 <div class="soLuongMon">
                     <span>Tổng cộng(món):</span> 
-                    <span><?php echo $soLuongMon;?></span>
+                    <span><?php echo count($cart);?></span>
                 </div>
                 <div class="phiGiaoHang">
                     <span>Phí ship:</span> 
@@ -140,8 +126,7 @@ $HD = [
                     </div>
                 </div>
                 <div class="btn_thanhToan">
-                <button type="button" class="btn btn-danger" 
-                    onclick="showConfirmation(<?php $data = ['TTDH' => $TTDH,'CTDH' => $CTDH, 'HD'=>$HD]; echo htmlspecialchars(json_encode($data),ENT_QUOTES, 'UTF-8'); ?>)">
+                <button type="button" class="btn btn-danger"  onclick="showConfirmation()">
                     Thanh toán
                 </button>
 
@@ -220,8 +205,13 @@ $HD = [
         </div>
 
 </body>
+
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+<script>
+    <?php $data = ['CTDH' => $CTDH, 'KH'=>$KH];?>
+    var data = <?php echo json_encode($data); ?>;   
+</script>
 <script src="./public/js/GioHang.js"></script>
 </html> 
 

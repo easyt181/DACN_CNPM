@@ -1,3 +1,72 @@
+
+
+$(document).ready(function() {
+    $('.soLuong_btn-cong').on('click', function() {
+        let soLuong = $(this).siblings('.soLuong_text').find('.soLuong_text-span').text();
+        let count_item = $(this).data('item');
+        soLuong = parseInt(soLuong) + 1
+        $(this).siblings('.soLuong_text').find('.soLuong_text-span').text(soLuong);
+        capNhatSoLuong(soLuong, count_item, 'tang')
+        
+    });
+    $('.soLuong_btn-tru').on('click', function() {
+        let soLuong = $(this).siblings('.soLuong_text').find('.soLuong_text-span').text();
+        let count_item = $(this).data('item');
+        soLuong = parseInt(soLuong) - 1
+        if(soLuong > 0) {
+            $(this).siblings('.soLuong_text').find('.soLuong_text-span').text(soLuong);
+            capNhatSoLuong(soLuong, count_item, 'giam')
+        }
+    });
+});
+function getCookie(name) {
+    let value = "; " + document.cookie;
+    let parts = value.split("; " + name + "=");
+    if (parts.length === 2) {
+        return parts.pop().split(";").shift();
+    }
+    return null;
+}
+
+function setCookie(name, value, days) {
+    let expires = "";
+    if (days) {
+        let date = new Date();
+        date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));  
+        expires = "; expires=" + date.toUTCString();
+    }
+    document.cookie = name + "=" + encodeURIComponent(value) + expires + "; path=/";  
+}
+
+function capNhatSoLuong(sl, count_item, tangGiam) {
+    let cartCookie = getCookie('cart');
+    let tongTien = $('#tongTientxt').text();
+    tongTien = tongTien.replace(" VND", "");
+    tongTien = tongTien.replace(/,/g, ""); 
+    tongTien = parseFloat(tongTien)
+    if (cartCookie) {
+        try {
+            let decodedCart = decodeURIComponent(cartCookie);  
+            let cart = JSON.parse(decodedCart);  
+            if(tangGiam == 'tang') {
+                tongTien = tongTien + parseFloat(cart[count_item].gia)
+            }else{
+                tongTien = tongTien - parseFloat(cart[count_item].gia)
+            }
+            cart[count_item].soLuong = sl.toString();
+            setCookie('cart', JSON.stringify(cart), 1); 
+            $('#tongTientxt').text(tongTien.toLocaleString() + ' VND')
+        } catch (e) {
+            console.error("Lỗi khi phân tích cookie 'cart':", e);
+        }
+    } else {
+        console.log("Không tìm thấy cookie 'cart'");
+    }
+}
+
+
+
+
 function removeItem(maMonAn) {
         fetch('index.php?controller=giohang&action=xoaGioHang', {
             method: 'POST',
@@ -16,7 +85,7 @@ let distance = 0
 let phiShip = 0
 
 
-const goongApiKey = 'YZzBVkRATVtmDRw9OC4P0p0KWiRDgyRZuyTRAj6u'; 
+// const goongApiKey = 'YZzBVkRATVtmDRw9OC4P0p0KWiRDgyRZuyTRAj6u'; 
 
 const point1 = { lat: 21.039966, lon: 105.741885 };
 
@@ -42,8 +111,8 @@ async function getCoordinatesFromAddress(address) {
             return null;
         }
     } catch (error) {
-        console.error('Lỗi khi lấy tọa độ từ địa chỉ:', error);
-        alert("Không thể lấy tọa độ. Vui lòng thử lại sau.");
+        // console.error('Lỗi khi lấy tọa độ từ địa chỉ:', error);
+        // alert("Không thể lấy tọa độ. Vui lòng thử lại sau.");    
         return null;
     }
 }
@@ -83,7 +152,6 @@ window.onload = async function() {
     if (coordinates) {
         const point2 = { lat: coordinates.lat, lon: coordinates.lng };
 
-        // Tính khoảng cách giữa địa chỉ trong span và điểm cố định
         distance = calculateDistance(point1, point2);
         phiShip = (distance.toFixed(2) * 5000); 
         tongTien = parseInt(tongTien) + parseFloat(phiShip);
@@ -92,13 +160,16 @@ window.onload = async function() {
         // Hiển thị khoảng cách
         document.getElementById('distance').textContent = `${formattedResult} VND`;
         document.getElementById('tongTientxt').textContent = `${tongTien_} VND`;
+    }else{
+        tongTien = parseInt(tongTien)
+        let tongTien_ = tongTien.toLocaleString();
+        document.getElementById('tongTientxt').textContent = `${tongTien_} VND`;
     }
 };
 function getTTDH(data) {
     const tongTien = document.getElementById('tongTientxt').textContent;
     let tongTien_ = tongTien.replace(" VND", "");
     const ghiChu = document.getElementById('textarea').value;
-    console.log(ghiChu);
     const selectedRadio = document.querySelector('input[name="flexRadioDefault"]:checked').id;
     let phuongThuc = '';
     
@@ -111,28 +182,43 @@ function getTTDH(data) {
 
     let tongTienNum = parseFloat(tongTien_.replace(/[.,]/g, "").replace(" VND", ""));
     tongTienNum = 2000;
-    let TTDH_ = data.TTDH
+    let CTDH = data.CTDH
+    let TTDH_ = data.KH
     TTDH_.khoangCach = distance.toFixed(2);
     TTDH_.phiShip = phiShip;
     TTDH_.tongTien = tongTienNum;
     TTDH_.phuongThuc = phuongThuc;
     TTDH_.ghiChu = ghiChu;
-    let HD_ = data.HD;
+    let HD_ = data.KH;
     HD_.ngayTao = new Date();
     HD_.tongTien = tongTienNum;
-    HD_.phuongThucThanhToan = phuongThuc;    
+    HD_.phuongThucThanhToan = phuongThuc;  
     $.ajax({
         url: "index.php?controller=giohang&action=themDonHangKH",
         type: "POST",
-        data: JSON.stringify({TTDH: TTDH_, CTDH: data.CTDH, HD: HD_}),
+        data: JSON.stringify({TTDH: TTDH_, CTDH: CTDH, HD: HD_}),
         contentType: "application/json",
         success: function (response) {
-            const data = JSON.parse(response);
-            if(data.PTTT == 'Thanh toán khi nhận hàng'){
-                alert('Đơn hàng được tạo thành công!');
-                window.location.href = 'index.php?controller=trangchu&action=Home';
+            const is_true = JSON.parse(response);
+            if(TTDH_.phuongThuc == 'Thanh toán khi nhận hàng'){
+                if(is_true){
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Thay đổi địa chỉ thành công!',
+                        text: 'Chúc mừng bạn đã thay đổi địa chỉ thành công.'
+                      }).then(() => {
+                        window.location.href = 'index.php?controller=trangchu&action=Home';
+                      });
+                }else{
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Đã có lỗi xảy ra',
+                        text: 'Vui lòng thử lại sau.'
+                      }).then(()=>{
+                        $('.modal__thongTinKH__diaChi-input').val(diachi);
+                      })
+                }
             }else{
-                alert('Đơn hàng được tạo thành công! Đến bước thanh toán qua QR code.');
                 window.location.href = 'index.php?controller=donhang&action=thanhToanQR&maDonHang=' + data.maDonHang; 
             }
             document.cookie = "cart=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC;";
@@ -145,19 +231,30 @@ function getTTDH(data) {
     // Hàm hiển thị modal xác nhận
 
 }
-function showConfirmation(TTDH) {
-    const confirmModal = new bootstrap.Modal(document.getElementById('confirmModal'));
-    confirmModal.show();
+function showConfirmation() {
+    const diaChi = data.KH['diaChi']
+    if (diaChi !== undefined) {
+        const confirmModal = new bootstrap.Modal(document.getElementById('confirmModal'));
+        confirmModal.show();
+        document.getElementById("confirmAction").addEventListener("click", function handleConfirm() {
+            getTTDH(data);
+            confirmModal.hide();
+            this.removeEventListener("click", handleConfirm);
+        });
 
-    document.getElementById("confirmAction").addEventListener("click", function handleConfirm() {
-        getTTDH(TTDH);
-        confirmModal.hide();
-        this.removeEventListener("click", handleConfirm);
-    });
-
-    document.getElementById("cancelAction").addEventListener("click", function handleCancel() {
-        this.removeEventListener("click", handleCancel);
-    });
+        document.getElementById("cancelAction").addEventListener("click", function handleCancel() {
+            this.removeEventListener("click", handleCancel);
+        });
+    }else{
+        Swal.fire({
+            icon: 'error',
+            title: 'Đã có lỗi xảy ra',
+            text: 'Vui lòng nhập địa chỉ.'
+          }).then(()=>{
+            $('.modal__thongTinKH__diaChi-input').val(diachi);
+          })
+    }
+    
 }
 
 function thayDoiTT() {
@@ -218,27 +315,28 @@ async function searchLocation() {
 
 
 // Hàm debounce giúp giảm tần suất gọi API
-const debouncedSearchLocation = debounce(searchLocation, 500); // 500ms trì hoãn
+const debouncedSearchLocation = debounce(searchLocation, 500); 
 
 // Sự kiện oninput để gọi hàm searchLocation khi người dùng nhập vào ô input
 document.getElementById('diaChiGiaoHang').oninput = debouncedSearchLocation;
 
-function xacNhanThayDoiDC(maKH) {
-    const diachi = $('.diaChi-span').text();
+function xacNhanThayDoiDC() {
     const diaChi =  $('.modal__thongTinKH__diaChi-input').val();
+    const tenKH =  $('.modal__thongTinKH__tenKH-input').val();
+    const sdt =  $('.modal__thongTinKH__sdtKH-input').val();
 
     $.ajax({
         url: "index.php?controller=giohang&action=thayDoiDiaChi",
         type: "POST",
-        data: JSON.stringify({diaChi : diaChi, tenKH : tenKH}),
+        data: JSON.stringify({diaChi : diaChi, maKH : data.KH.maKH, tenKH :  tenKH, sdt: sdt}),
         contentType: "application/json",
         success: function (response) {
             const is_thayDoi = JSON.parse(response);
             if(is_thayDoi){
                 Swal.fire({
                     icon: 'success',
-                    title: 'Đăng ký thành công!',
-                    text: 'Chúc mừng bạn đã đăng ký thành công.'
+                    title: 'Thay đổi địa chỉ thành công!',
+                    text: 'Chúc mừng bạn đã thay đổi địa chỉ thành công.'
                   }).then(() => {
                         location.reload();
                   });
@@ -258,3 +356,5 @@ function xacNhanThayDoiDC(maKH) {
     });
 
 }
+
+

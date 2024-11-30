@@ -13,17 +13,17 @@ class GioHangModel {
         $stmt = $this->db->prepare($query);
         $stmt->execute([
             $data['maKH'], $data['ngayTao'], $data['phuongThuc'], 
-            $data['diaChi'], $data['khoangCach'], $data['phiShip'], $data['tongTien'], 
+            $data['diaChiGiaoHang'], $data['khoangCach'], $data['phiShip'], $data['tongTien'], 
             'Chưa thanh toán', 'Đang chờ xác nhận', $data['ghiChu']
         ]);
         return true;
     }
-    public function ThayDoiDiaChi($diaChi, $tenKH) {
-        $query = 'UPDATE khachhang SET diaChi = ? WHERE maKH = ?';
+    public function ThayDoiDiaChi($diaChi, $maKH, $tenKH, $sdt) {
+        $query = 'UPDATE khachhang SET diaChi = ?, tenKH = ?, sdt = ? WHERE maKH = ?';
 
         $stmt = $this->db->prepare($query);
         try {
-            $stmt->execute([$diaChi, $tenKH]);
+            $stmt->execute([$diaChi, $tenKH, $sdt, $maKH]);
             return true;
         }catch (PDOException $e) {
             echo "Lỗi kiểm tra dữ liệu: " . $e->getMessage();

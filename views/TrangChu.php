@@ -1,5 +1,4 @@
 <?php
-    session_start();
     include './config/database.php';
 
     try {
@@ -8,17 +7,8 @@
         $result = $pdo->query($sql);
 
         // Lấy thông tin khách hàng với maKH = 'KH001'
-        $query = "SELECT * FROM khachhang WHERE maKH = 'KH001'";
-        $stmt = $pdo->prepare($query);
-        $stmt->execute();
-        $KH = $stmt->fetch(PDO::FETCH_ASSOC);
+        $_SESSION['maTaiKhoan'] = 'TKKH003';
 
-        if ($KH) {
-            // Lưu thông tin khách hàng vào session
-            $_SESSION['KH'] = $KH;
-        }
-
-        // Quản lý giỏ hàng thông qua cookie
         $cart = isset($_COOKIE['cart']) ? json_decode($_COOKIE['cart'], true) : [];
         setcookie('cart', json_encode($cart), time() + 800000, "/");
 

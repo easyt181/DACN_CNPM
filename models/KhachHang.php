@@ -68,5 +68,11 @@ class KhachHang {
         $stmt->execute([$searchTerm, $searchTerm, $searchTerm]);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
+    public function layThongTinKHMaTK($maTaiKhoan) {
+        $sql = "SELECT * FROM khachhang WHERE maTaiKhoan = ?";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute([$maTaiKhoan]);
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
 }
 ?>
