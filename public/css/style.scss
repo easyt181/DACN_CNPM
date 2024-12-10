@@ -21,6 +21,8 @@ $light-bg:#f3f3f3;
 $border:.1rem solid rgba(0,0,0,.2);
 $box-shadow:0 1rem 1rem rgba(0,0,0,.05);
 
+
+
 @mixin grid($val) {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax($val, 1fr));
@@ -327,7 +329,7 @@ section{
   flex-wrap: wrap-reverse;
   gap:2rem;
   position: relative;
-  overflow: hidden;
+  overflow: hidden; 
 
   .content{
     flex:1 1 41rem;

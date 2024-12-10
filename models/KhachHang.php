@@ -26,7 +26,6 @@ class KhachHang {
         return true;
     }
 
-    // Sửa thông tin khách hàng
     public function suaKH($maKH, $data) {
         $sql = "UPDATE khachhang 
                 SET maTaiKhoan = ?, tenKH = ?, sdt = ?, email = ?, diaChi = ?
@@ -68,6 +67,12 @@ class KhachHang {
         $searchTerm = "%$keyword%";
         $stmt->execute([$searchTerm, $searchTerm, $searchTerm]);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+    public function layThongTinKHMaTK($maTaiKhoan) {
+        $sql = "SELECT * FROM khachhang WHERE maTaiKhoan = ?";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute([$maTaiKhoan]);
+        return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 }
 ?>

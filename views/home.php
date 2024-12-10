@@ -1,12 +1,37 @@
-<!-- <?php if (isset($_SESSION['tenDangNhap'])): ?>
-<p>Xin chào, <?php echo $_SESSION['tenDangNhap']; ?>!</p>
-<?php if ($_SESSION['maQuyen'] === 'admin'): ?>
-<a href="admin.php">Trang quản trị</a>
-<?php endif; ?>
-<a href="index.php?controller=login&action=logout">Đăng xuất</a>
-<?php else: ?>
-<a href="index.php?controller=login&action=login">Đăng nhập</a>
-<?php endif; ?> -->
+
+<?php
+$cart = [
+    [
+        'maMonAn' => 'MA001',
+        'tenMonAn' => 'Phở Bò',
+        'hinhAnhMonAn' => 'public/image/pho_bo.jpg',
+        'loaiMonAn' => 'Món nước',
+        'buaSangTruaToi' => 'Sáng',
+        'moTa' => 'Phở bò truyền thống Việt Nam',
+        'gia' => '45000.00',
+        'tinhTrang' => 'Đang còn món',
+        'deCuMonAn' => '1',
+        'soLuong' => '2'
+    ],
+    [
+        'maMonAn' => 'MA002',
+        'tenMonAn' => 'Bún Chả',
+        'hinhAnhMonAn' => 'images/bun_cha.jpg',
+        'loaiMonAn' => 'Món nước',
+        'buaSangTruaToi' => 'Trưa',
+        'moTa' => 'Bún chả Hà Nội, đậm đà vị truyền thống',
+        'gia' => '50000.00',
+        'tinhTrang' => 'Đang còn món',
+        'deCuMonAn' => '1',
+        'soLuong' => '3'
+    ]
+];
+
+// Chuyển mảng thành JSON và lưu vào cookie
+setcookie('cart', json_encode($cart), time() + 3600, "/"); // 1 giờ
+
+
+?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -51,7 +76,8 @@
             <div class="icons">
                 <div id="menu-btn" class="fas fa-bars"></div>
                 <div id="search-btn" class="fas fa-search"></div>
-                <div id="cart-btn" class="fas fa-shopping-cart"></div>
+                <a href="index.php?controller=giohang&action=hienThiGioHang" style="display: inline-block;"><div id="cart-btn" class="fas fa-shopping-cart" >
+                </div></a>
 
                 <?php if (isset($_SESSION['tenDangNhap'])): ?>
 

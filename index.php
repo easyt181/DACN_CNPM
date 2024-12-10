@@ -13,15 +13,25 @@ require_once 'controllers/LichSuController.php';
 require_once 'controllers/ThucDonController.php';
 require_once 'controllers/LoginController.php';
 require_once 'models/LoginModel.php';
+require_once 'PHPMailer.php';
 
 
-$controller = isset($_GET['controller']) ? $_GET['controller'] : 'donhang';
-$action = isset($_GET['action']) ? $_GET['action'] : 'hienThiDanhSachDonHang';
+
+$controller = isset($_GET['controller']) ? $_GET['controller'] : 'thucdon';
+$action = isset($_GET['action']) ? $_GET['action'] : 'hienThiHome';
+
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
 
 switch ($controller) {
     case 'donhang':
+        session_start(); // Tạm thời chưa có đăng nhập
+        $_SESSION['maTaiKhoan'] = 'TK001';    
+        $_SESSION['maQuyen'] = 'admin'; 
         $maTaiKhoanNV = $_SESSION['maTaiKhoan'];
-        if(isset($_SESSION['maTaiKhoan']) && isset($_SESSION['maQuyen']) && $_SESSION['maQuyen'] == 'admin' || $_SESSION['maQuyen'] == 'nhanvien'){
+        if(isset($_SESSION['maTaiKhoan']) && isset($_SESSION['maQuyen']) && strtolower($_SESSION['maQuyen']) == 'admin'){
             $donHangController = new QuanLyDonHangController($pdo);
             if ($action == 'hienThiDanhSachDonHang') {
                 $donHangController->layDSDonHangTheoNhom();
@@ -56,13 +66,18 @@ switch ($controller) {
         }
         break;
     case 'giohang':
-        $gioHangController = new GioHangController($pdo);
-        if ($action == 'hienThiGioHang'){
-            $gioHangController->hienThiGioHang();
-        }elseif($action == 'themDonHangKH'){
-            $gioHangController->insert_DH();
-        }elseif($action == 'xoaGioHang'){
-            $gioHangController->remove();
+        if(isset($_SESSION['maTaiKhoan']) && isset($_SESSION['maQuyen']) && strtolower($_SESSION['maQuyen']) == 'khachhang'){
+            $gioHangController = new GioHangController($pdo);
+            if ($action == 'hienThiGioHang'){
+                $gioHangController->layThongTinKH();
+                $gioHangController->hienThiGioHang();
+            }elseif($action == 'themDonHangKH'){
+                $gioHangController->insert_DH();
+            }elseif($action == 'xoaGioHang'){
+                $gioHangController->remove();
+            }elseif($action == 'thayDoiDiaChi'){
+                $gioHangController->thayDoiDiaChi();
+            }
         }
     case 'danhgia':
         $danhGiaController = new DanhGiaController($pdo);
@@ -91,7 +106,40 @@ switch ($controller) {
             $loginController->login();
         } elseif ($action === 'logout') {
             $loginController->logout();
+        }elseif ($action == 'dangKyKH') {
+            $is_DangKy = $loginController->DangKyKH();  // Thực hiện đăng ký
+            if($is_DangKy) {
+                header("Location: index.php?controller=login&action=login&message=thanhCong");
+                exit();  
+            } else {
+                header("Location: index.php?controller=login&action=login&message=thatBai");
+                exit();  
+            }
+        }elseif($action == 'hienThiLayLaiMK'){
+            $loginController->hienThiLayLaiMK();
+        }elseif($action == 'guiEmail'){
+            $is_kiemtraTK = $loginController->LayLaiMK();
+            if($is_kiemtraTK){
+                header("Location: index.php?controller=login&action=login&message=thanhCong");
+                exit();  
+            }else{
+                header("Location: index.php?controller=login&action=login&message=thatBai");
+                exit();  
+            }
+        }elseif($action == 'hienThiThayDoiMK'){
+            $loginController->hienThiThayDoiMK();
+        }elseif($action == 'thayDoiMK'){
+            $is_true = $loginController->thayDoiMK();
+            if($is_true){
+                header("Location: index.php?controller=login&action=login&message=thanhCong");
+                exit();  
+            }else{
+                header("Location: index.php?controller=login&action=login&message=thatBai");
+                exit();  
+            }
         }
+        
+        
         break;
     
     default:

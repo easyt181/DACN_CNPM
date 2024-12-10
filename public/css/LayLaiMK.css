@@ -1,0 +1,35 @@
+*{
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+}
+
+html, body{
+    height: 100vh;
+    caret-color: transparent;
+}
+.container{
+    height: 100%;
+    display: flex;
+    align-items: center;
+}
+.box {
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+    padding: 30px 0 30px 30px;
+}
+.box_text h2{
+    text-align: center;
+}
+.box_text input{
+    caret-color: black;
+}
+.box_text button{
+    float: right;
+}
+.imt_logo{
+    width: fit-content;
+}
+.imt_logo img{
+    height: 200px;
+    width: 200px;
+}

@@ -9,6 +9,9 @@
      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css" integrity="sha512-KfkfwYDsLkIlwQp6LFnl8zNdLGxu9YAA1QvwINks4PhcElQSvqcyVLLD9aMhXd13uQjoXtEKNosOWaZqXgel0g==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <!-- css stylesheet -->
     <link rel="stylesheet" href="./public/css/logincss.css">
+
+    <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11.6.10/dist/sweetalert2.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.6.10/dist/sweetalert2.min.js"></script>
     <script>
 function openErrorModal() {
   document.getElementById("errorModal").style.display = "block";
@@ -47,24 +50,28 @@ window.onclick = function(event) {
 
     <div class="container" id="container">
         <div class="form-container sign-up-container">
-            <form action="#">
-                <h1>CREATE ACCOUNT</h1>
+            <form id="form_dangKy" method="POST" action="index.php?controller=login&action=dangKyKH">
+                <h1>Đăng ký</h1>
                 <div class="social-container">
                     <a href="#" class="social"><i class="fab fa-facebook-f"></i></a>
                     <a href="#" class="social"><i class="fab fa-google-plus-g"></i></a>
                     
                 </div>
-                <span>OR</span>
+                <span>Hoặc</span>
                 <div class="infield">
-                    <input type="text" placeholder="Name" />
+                    <input type="text" name="tenDangNhap" placeholder="Tên đăng nhập" required/>
                     <label></label>
                 </div>
                 <div class="infield">
-                    <input type="email" placeholder="Email" name="email"/>
+                    <input type="text" name="sdt" placeholder="Số điện thoại" required/>
                     <label></label>
                 </div>
                 <div class="infield">
-                    <input type="password" placeholder="Password" />
+                    <input type="email" name="email" placeholder="Email" name="email" required/>
+                    <label></label>
+                </div>
+                <div class="infield">
+                    <input type="password" name="matKhau" placeholder="Mật khẩu" required/>
                     <label></label>
                 </div>
                 <button>Đăng ký</button>
@@ -87,7 +94,7 @@ window.onclick = function(event) {
                     <input type="password" placeholder="Password" name="matKhau" id="matKhau" autocomplete="off" required>
                     <label></label>
                 </div>
-                <a href="#" class="forgot">Bạn quên mật khẩu?</a>
+                <a href="index?controller=login&action=hienThiLayLaiMK" class="forgot">Bạn quên mật khẩu?</a>
                 <button type="submit">Đăng nhập</button>
             </form>
         </div>
@@ -95,7 +102,7 @@ window.onclick = function(event) {
             <div class="overlay">
                 <div class="overlay-panel overlay-left">
                     <h1>Welcome Back!</h1>
-                    <p>Đăng nhập ngay để không bỏ lỡ những món ngon dành riêng cho bạn!</p>
+                    <p>Đăng nhập để không bỏ lỡ những món ngon dành riêng cho bạn!</p>
                     <button>Sign in</button>
                 </div>
                 <div class="overlay-panel overlay-right">
@@ -123,6 +130,30 @@ window.onclick = function(event) {
             })
         })
     </script>
-
+    <?php if (isset($_GET['message']) && $_GET['message'] == 'thanhCong'): ?>
+        <script>
+            Swal.fire({
+                icon: 'success',
+                title: 'Đăng ký thành công!',
+                text: 'Chúc mừng bạn đã đăng ký thành công.',
+                showConfirmButton: true,
+                timer: 1500  
+            }).then(() => {
+                window.location.href = "index.php?controller=login&action=login"; 
+            });
+        </script>
+    <?php endif; ?>
+    <?php if (isset($_GET['message']) && $_GET['message'] == 'thatBai'): ?>
+        <script>
+            Swal.fire({
+                icon: 'error',
+                title: 'Đăng ký thất bại!',
+                text: 'Có lỗi xảy ra, vui lòng thử lại.',
+                showConfirmButton: true
+            }).then(() => {
+                document.getElementById("form_dangKy").reset(); 
+            });
+        </script>
+    <?php endif; ?>
 </body>
 </html>

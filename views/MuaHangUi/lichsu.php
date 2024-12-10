@@ -3,6 +3,7 @@
 $servername = "localhost";
 $username = "root";
 $password = "";
+$port = 3306;
 $database = "db_nhom5_dacn";
 $conn = new mysqli($servername, $username, $password, $database);
 
@@ -145,5 +146,5 @@ $result = $stmt->get_result();
   </script>
   
 </body>
-<script src="/public/js/lichsu.js"></script>
+<script src="./lichsu.js"></script>
 </html>
