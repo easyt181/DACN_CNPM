@@ -1,5 +1,4 @@
 <?php
-
 class HoaDon {
     private $db;
     public function __construct($pdo) {
@@ -18,7 +17,9 @@ class HoaDon {
             ]);
     
             if ($result) {
-                return true;
+                $stmt = $this->db->prepare("SELECT maHoaDon FROM HoaDon WHERE maDonHang = ? ORDER BY ngayTao DESC LIMIT 1");
+                $stmt->execute([$data['maDonHang']]);
+                return $stmt->fetch(PDO::FETCH_ASSOC)['maHoaDon'];
             } else {
                 throw new Exception('Error executing SQL query.');
             }
@@ -49,5 +50,18 @@ class HoaDon {
             return false;
         }
     }
+
+    public function layThongTinHoaDon($maDonHang) {
+        try {
+            $stmt = $this->db->prepare("SELECT * FROM HoaDon WHERE maDonHang = ? AND trangThaiHoaDon = 'Đã thanh toán' OR trangThaiHoaDon = 'Chưa thanh toán'");
+            $stmt->execute([$maDonHang]);
+            $hoaDon = $stmt->fetch();
+            return $hoaDon;
+        } catch (PDOException $e) {
+            echo "PDOException: " . $e->getMessage();
+            return false;
+        }
+    }
+
 }
 ?>

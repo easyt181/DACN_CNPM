@@ -28,8 +28,6 @@
             $stmt->execute();
             $order_details = $stmt->fetch(PDO::FETCH_OBJ);
             ?>
-
-
             <div class="row">
                 <div class="col-md-8 mx-auto">
                     <h1>
@@ -55,7 +53,7 @@
                         <div class="col-md-6 border text-center p-2">
                             <p class="fw-bold">Cách 1: Mở app ngân hàng và quét mã QR</p>
                             <div class="my-2">
-                                <img src="https://qr.sepay.vn/img?bank=MBBank&acc=0963421148&template=compact&amount=2000&des=<?= $order_id; ?>" class="img-fluid">
+                                <img src="https://qr.sepay.vn/img?bank=MBBank&acc=0963421148&template=compact&amount=<?=$order_details->tongTien ?>&des=<?= $order_id; ?>" class="img-fluid">
                                 <span>Trạng thái: Chờ thanh toán... <br><div class="spinner-border" role="status">
                                         <span class="sr-only"></span>
                                     </div></span>

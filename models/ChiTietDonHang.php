@@ -8,7 +8,7 @@ class ChiTietDonHang {
     }
 
     public function layChiTietDonHangTheoMaDonHang($maDonHang) {
-        $stmt = $this->db->prepare("SELECT td.tenMonAn, ct.donGia, ct.soLuong, ct.thanhTien FROM chitietdonhang ct LEFT JOIN thucdon td ON ct.maMonAn = td.maMonAn WHERE ct.maDonHang = ?");
+        $stmt = $this->db->prepare("SELECT td.tenMonAn, ct.maMonAn, ct.donGia, ct.soLuong, ct.thanhTien FROM chitietdonhang ct LEFT JOIN thucdon td ON ct.maMonAn = td.maMonAn WHERE ct.maDonHang = ?");
         $stmt->execute([$maDonHang]);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }

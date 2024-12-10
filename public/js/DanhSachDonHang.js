@@ -1,3 +1,17 @@
+document.getElementById('addOrderButton').addEventListener('click', function () {
+  const maDonHang = 'DH' + Math.floor(Math.random() * (999999 - 100000 + 1) + 100000);
+  const url = `index.php?controller=donhang&action=hienThiTrangThemDonHang&maDonHang=${maDonHang}`;
+  window.open(url, '_blank');
+});
+
+
+function suaDonHangButton(maDonHang) { 
+  const url = `index.php?controller=donhang&action=hienThiTrangSuaDonHang&maDonHang=${maDonHang}`;
+  window.open(url, '_blank');
+}
+
+
+// Hiển thị chi tiết đơn hàng
 function loadOrderDetails(maDonHang) {
   $.ajax({
     url: "index.php?controller=donhang&action=layChiTietDonHang",

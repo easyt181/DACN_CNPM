@@ -1,5 +1,43 @@
 let cart = [];
 
+// Hiển thị các chi tiết đơn hàng
+document.addEventListener("DOMContentLoaded", function () {
+    const initialCart = JSON.parse(document.getElementById("initialCartData").value);
+    cart = initialCart.map(item => ({
+        maMonAn: item.maMonAn,
+        tenMonAn: item.tenMonAn,
+        gia: item.donGia,
+        quantity: item.soLuong
+    }));
+    renderCart(); 
+});
+
+// Hàm xử lý sửa đơn hàng
+$('#updateOrder').click(function (event) {
+    event.preventDefault();
+    const maDonHang = $('#maDonHang').val();
+    const formData = new FormData();
+formData.append('maDonHang', $('#maDonHang').val());
+formData.append('tenKH', $('#tenKH').val());
+formData.append('diaChiGiaoHang', $('#diaChiGiaoHang').val());
+formData.append('phuongThucThanhToan', $('#phuongThucThanhToan').val());
+formData.append('trangThaiDonHang', $('#trangThaiDonHang').val());
+formData.append('tongTien', $('#tongTien').val());
+formData.append('tongTienCongTru', $('#tongTienCongTru').val());
+formData.append('ghiChu', $('#ghiChu').val());
+formData.append('maUuDaiDH', $('#maUuDaiDH').val());
+
+// Kiểm tra và thêm hình ảnh (nếu có)
+const transactionImage = $('#transactionImage')[0].files[0];
+if (transactionImage) {
+    formData.append('transactionImage', transactionImage);
+}
+    
+
+    
+});
+
+
 // Tìm kiếm món ăn
 $('#btnSearch').click(function (event) {
     event.preventDefault(); 
@@ -51,9 +89,9 @@ function addToCart(maMonAn, tenMonAn, gia) {
     event.preventDefault();
     const existingItem = cart.find(item => item.maMonAn === maMonAn);
     if (existingItem) {
-        existingItem.quantity++;
+        existingItem.quantity++; // Tăng số lượng nếu món ăn đã có trong giỏ
     } else {
-        cart.push({ maMonAn, tenMonAn, gia, quantity: 1 });
+        cart.push({ maMonAn, tenMonAn, gia, quantity: 1 }); // Thêm món mới
     }
     renderCart();
 }
@@ -63,14 +101,14 @@ function renderCart() {
         <tr>
             <td>${item.tenMonAn}</td>
             <td>${formatCurrency(item.gia)} VNĐ</td>
-            <td><input type="number" value="${item.quantity}" onchange="updateQuantity('${item.maMonAn}', this.value)" min="1"></td>
+            <td><input type="number" value="${item.quantity}" min="1" onchange="updateQuantity('${item.maMonAn}', this.value)"></td>
             <td>${formatCurrency(item.gia * item.quantity)} VNĐ</td>
             <td><button class="btn btn-danger btn-sm" onclick="removeFromCart('${item.maMonAn}')">Xóa</button></td>
         </tr>
     `).join('');
-    $('#cartItems').html(cartHtml);
 
-    updateTotal();
+    $('#cartItems').html(cartHtml);
+    updateTotal(); // Cập nhật tổng tiền
 }
 function updateQuantity(maMonAn, quantity) {
     const item = cart.find(item => item.maMonAn === maMonAn);
@@ -99,104 +137,6 @@ document.addEventListener("DOMContentLoaded", function() {
         }
     });
 });
-
-
-// Thêm đơn hàng
-document.getElementById('submitOrder').addEventListener('click', function(event) {
-    const maDonHang = document.getElementById('maDonHang').value;
-    if (cart.length === 0) {
-        Swal.fire({
-            title: 'Thông báo!',
-            text: `Giỏ hàng đang trống! Vui lòng thêm món ăn vào giỏ.`,
-            icon: 'warning',
-            confirmButtonText: 'OK'
-        });
-        return;
-    }
-    const phuongThucThanhToan = document.getElementById('phuongThucThanhToan').value;
-    const transactionImage = document.getElementById('transactionImage').files[0];
-    if (phuongThucThanhToan === 'Chuyển khoản trực tiếp' && !transactionImage) {
-        Swal.fire({
-            title: 'Thông báo!',
-            text: 'Vui lòng chọn ảnh chứng minh giao dịch!',
-            icon: 'warning',
-            confirmButtonText: 'OK'
-        });
-        return;
-    }
-
-    const formData = new FormData();
-    formData.append('cartItems', JSON.stringify(cart));
-    formData.append('tenKH', document.getElementById('tenKH').value);
-    formData.append('sdt', document.getElementById('sdt').value);
-    formData.append('diaChiGiaoHang', document.getElementById('diaChiGiaoHang').value);
-    formData.append('khoangCachGiaoHang', document.getElementById('khoangCachGiaoHang').value);
-    formData.append('ngayTao', document.getElementById('ngayTao').value);
-    formData.append('phuongThucThanhToan', document.getElementById('phuongThucThanhToan').value);
-    formData.append('tongTien', document.getElementById('tongTien').value);
-    formData.append('tongTienCongTru', document.getElementById('tongTienCongTru').value);
-    formData.append('phiShip', document.getElementById('phiShip').value);
-    formData.append('maUuDaiDH', document.getElementById('maUuDaiDH').value);
-    formData.append('ghiChu', document.getElementById('ghiChu').value);
-    if (transactionImage) {
-        formData.append('transactionImage', transactionImage);
-    }
-
-    // Gửi FormData qua AJAX
-    fetch('index.php?controller=donhang&action=themDonHangQuanLy&maDonHang='+ maDonHang, {
-        method: 'POST',
-        body: formData
-    })
-    .then(response => response.json())
-    .then(result => {
-        if (result.message === 'thieuthongtin') {
-            Swal.fire({
-                title: 'Thông báo!',
-                text: `Vui lòng nhập đầy đủ thông tin`,
-                icon: 'warning',
-                confirmButtonText: 'OK'
-            }).then(() => {
-            });
-            return;
-        }
-        if (result.success) {
-            if (phuongThucThanhToan === 'Thanh toán khi nhận hàng') {
-                Swal.fire({
-                    title: 'Thành công!',
-                    text: `Đơn hàng được tạo thành công!`,
-                    icon: 'success',
-                    confirmButtonText: 'OK'
-                }).then(() => {
-                    window.location.href = 'index.php?controller=donhang&action=hienThiDanhSachDonHang';
-                });
-            }else if (phuongThucThanhToan === 'Chuyển khoản trực tiếp') {
-                    window.location.href = 'index.php?controller=donhang&action=hienThiDanhSachDonHang';
-            } else {
-                Swal.fire({
-                    title: 'Thành công!',
-                    text: `Đơn hàng được tạo thành công! Đến bước thanh toán qua QR code.`,
-                    icon: 'success',
-                    confirmButtonText: 'OK'
-                }).then(() => {
-                    window.location.href = 'index.php?controller=donhang&action=thanhToanQR&maDonHang=' + result.maDonHang;
-                });
-            }
-        } else {
-            alert('Lỗi: ' + result.message);
-        }
-    })
-    .catch(error => {
-        console.error('Error details:', error); // Hiển thị chi tiết lỗi
-        Swal.fire({
-        title: 'Lỗi!',
-        text: `Đã xảy ra lỗi khi gửi yêu cầu: ${error.message || 'Không rõ nguyên nhân.'}`,
-        icon: 'error',
-        confirmButtonText: 'OK'
-    });
-    });
-    document.getElementById("themDonHang").reset();
-});
-
 
 
 

@@ -121,7 +121,7 @@ input.form-control:focus, select.form-select:focus, textarea.form-control:focus 
 
 
 /* Style cho nút "Thêm Đơn Hàng" */
-button[id="submitOrder"] {
+button[id="submitOrder"], button[id="updateOrder"] {
     background-color: #007bff;
     border-color: #007bff;
     color: white;
@@ -169,4 +169,11 @@ body {
 /* Khi hover vào suggestion */
 #suggestions .suggestion:hover {
     background-color: #bdbdbd;
+}
+
+input[readonly] {
+    background-color: #f0f0f0; /* Màu nền xám nhạt */
+    color: #6c757d; /* Màu chữ xám */
+    border: 1px solid #ccc; /* Viền màu xám */
+    cursor: not-allowed; /* Thay đổi con trỏ thành không cho phép */
 }
