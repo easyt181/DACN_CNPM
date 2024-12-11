@@ -53,7 +53,7 @@ class HoaDon {
 
     public function layThongTinHoaDon($maDonHang) {
         try {
-            $stmt = $this->db->prepare("SELECT * FROM HoaDon WHERE maDonHang = ? AND trangThaiHoaDon = 'Đã thanh toán' OR trangThaiHoaDon = 'Chưa thanh toán'");
+            $stmt = $this->db->prepare("SELECT * FROM HoaDon WHERE maDonHang = ? AND trangThaiHoaDon != 'Đã hủy'");
             $stmt->execute([$maDonHang]);
             $hoaDon = $stmt->fetch();
             return $hoaDon;

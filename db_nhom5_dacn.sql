@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Nov 30, 2024 at 12:32 PM
+-- Generation Time: Dec 11, 2024 at 01:13 PM
 -- Server version: 10.4.28-MariaDB
 -- PHP Version: 8.2.4
 
@@ -40,6 +40,11 @@ CREATE TABLE `chitietdonhang` (
 -- Dumping data for table `chitietdonhang`
 --
 
+INSERT INTO `chitietdonhang` (`maChiTiet`, `maDonHang`, `maMonAn`, `soLuong`, `donGia`, `thanhTien`) VALUES
+('CT1DH615551', 'DH615551', 'MA002', 1, 50000.00, 50000.00),
+('CT1DH918194', 'DH918194', 'MA003', 3, 40000.00, 120000.00),
+('CT2DH615551', 'DH615551', 'MA003', 1, 40000.00, 40000.00),
+('CT3DH615551', 'DH615551', 'MA004', 2, 25000.00, 50000.00);
 
 --
 -- Triggers `chitietdonhang`
@@ -69,10 +74,18 @@ DELIMITER ;
 
 CREATE TABLE `chungminhgiaodich` (
   `maChungMinh` varchar(50) NOT NULL,
-  `maGiaoDich` varchar(50) NOT NULL,
+  `maHoaDon` varchar(50) NOT NULL,
+  `soTienNhanDuoc` decimal(19,2) NOT NULL,
   `duongDanAnh` varchar(100) NOT NULL,
   `thoiGianTaiLen` datetime NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `chungminhgiaodich`
+--
+
+INSERT INTO `chungminhgiaodich` (`maChungMinh`, `maHoaDon`, `soTienNhanDuoc`, `duongDanAnh`, `thoiGianTaiLen`) VALUES
+('CMGD67588b6779d00ofDH918194', 'HD1DH918194', 1345000.00, '/public/image/cmgd/67588b6776b89_DSC09365.JPG', '2024-12-11 01:41:00');
 
 -- --------------------------------------------------------
 
@@ -116,26 +129,9 @@ CREATE TABLE `donhang` (
 -- Dumping data for table `donhang`
 --
 
-
---
--- Triggers `donhang`
---
-DELIMITER $$
-CREATE TRIGGER `before_insert_DonHang` BEFORE INSERT ON `donhang` FOR EACH ROW BEGIN
-    DECLARE max_maDonHang INT;
-    
-    -- Lấy mã DonHang lớn nhất hiện tại
-    SELECT MAX(CAST(SUBSTRING(maDonHang, 3) AS UNSIGNED)) INTO max_maDonHang FROM DonHang;
-    
-    -- Gán mã mới cho maDonHang (DH001, DH002,...)
-    IF max_maDonHang IS NULL THEN
-        SET NEW.maDonHang = CONCAT('DH', LPAD(1, 3, '0'));
-    ELSE
-        SET NEW.maDonHang = CONCAT('DH', LPAD(max_maDonHang + 1, 3, '0'));
-    END IF;
-END
-$$
-DELIMITER ;
+INSERT INTO `donhang` (`maDonHang`, `maKH`, `maTaiKhoanNV`, `maUuDaiDH`, `ngayTao`, `phuongThucThanhToan`, `diaChiGiaoHang`, `khoangCachGiaoHang`, `phiShip`, `tongTienCongTru`, `tongTien`, `trangThaiThanhToan`, `trangThaiDonHang`, `ghiChu`) VALUES
+('DH615551', 'KH012', 'TKadmin', '', '2024-12-11 01:40:00', 'Thanh toán khi nhận hàng', 'Giang Nam, Thị trấn Kiến Xương, Huyện Kiến Xương, Tỉnh Thái Bình', 103.1, 515000.00, 0.00, 655000.00, 'Chưa thanh toán', 'Đang chuẩn bị', ''),
+('DH918194', 'KH013', 'TKadmin', '', '2024-12-11 01:41:00', 'Chuyển khoản trực tiếp', 'Bờ Sông, Xín Cái, Mèo Vạc, Hà Giang', 245.4, 1225000.00, 0.00, 1345000.00, 'Đã thanh toán', 'Đang chuẩn bị', '');
 
 -- --------------------------------------------------------
 
@@ -146,7 +142,6 @@ DELIMITER ;
 CREATE TABLE `giaodich` (
   `maGiaoDich` varchar(50) NOT NULL,
   `maDonHang` varchar(50) NOT NULL,
-  `maTaiKhoanNV` varchar(50) DEFAULT NULL,
   `ngayGiaoDich` datetime NOT NULL,
   `loaiGiaoDich` varchar(100) NOT NULL,
   `soTaiKhoan` varchar(100) NOT NULL,
@@ -159,13 +154,6 @@ CREATE TABLE `giaodich` (
   `maThamChieuGiaoDich` varchar(255) NOT NULL,
   `noiDungGiaoDich` text NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Dumping data for table `giaodich`
---
-
-INSERT INTO `giaodich` (`maGiaoDich`, `maDonHang`, `maTaiKhoanNV`, `ngayGiaoDich`, `loaiGiaoDich`, `soTaiKhoan`, `soTienVao`, `soTienRa`, `noiDungChuyenKhoan`, `ngayTaoGiaoDich`, `trangThaiGiaoDich`, `gateWay`, `maThamChieuGiaoDich`, `noiDungGiaoDich`) VALUES
-('GD1DH001', 'DH001', NULL, '2024-11-24 20:36:09', 'in', '0963421148', 2000.00, 0.00, 'DH001', '2024-11-24 20:36:12', 'Hoàn tất', 'MBBank', 'FT24330722327404', 'BankAPINotify DH001');
 
 --
 -- Triggers `giaodich`
@@ -210,6 +198,9 @@ CREATE TABLE `hoadon` (
 -- Dumping data for table `hoadon`
 --
 
+INSERT INTO `hoadon` (`maHoaDon`, `maDonHang`, `sdt`, `tenKH`, `diaChiGiaoHang`, `ngayTao`, `tongTien`, `phuongThucThanhToan`, `trangThaiHoaDon`, `trangThaiHoanTien`) VALUES
+('HD1DH615551', 'DH615551', '0987231231', 'Lỗ Tử Kính', 'Giang Nam, Thị trấn Kiến Xương, Huyện Kiến Xương, Tỉnh Thái Bình', '2024-12-11 01:40:00', 655000.00, 'Thanh toán khi nhận hàng', 'Chưa thanh toán', 0),
+('HD1DH918194', 'DH918194', '0987231123', 'Chu Công Cẩn', 'Bờ Sông, Xín Cái, Mèo Vạc, Hà Giang', '2024-12-11 01:41:00', 1345000.00, 'Chuyển khoản trực tiếp', 'Đã thanh toán', 0);
 
 --
 -- Triggers `hoadon`
@@ -253,8 +244,17 @@ CREATE TABLE `khachhang` (
 INSERT INTO `khachhang` (`maKH`, `maTaiKhoan`, `tenKH`, `sdt`, `email`, `diaChi`) VALUES
 ('KH001', 'TKKH001', 'Chu Công Cẩn', '0999999999', '1234@gmail.com', 'Trường đại học Công nghệ Đông Á, Trịnh Văn Bô, Phương Canh, Nam Từ Liêm, Hà Nội'),
 ('KH002', NULL, 'Lỗ Tử Kính', '333444555666', NULL, 'Kinh Châu, Xã Hương Nộn, Huyện Tam Nông, Tỉnh Phú Thọ'),
-('KH003', NULL, 'Hoắc Tuấn', '0367860614', NULL, 'Hải Dương'),
-('KH004', 'TKKH003', 'Bùi Công Đạt', '0367860614', 'datcongh4231@gmail.com', '172 Phú Diễn, Phú Diễn, Bắc Từ Liêm, Hà Nội');
+('KH003', NULL, 'Hoắc Tuấn', '033444555888', NULL, 'Hải Dương'),
+('KH004', NULL, 'Trương Dực Đức', '0912341234', NULL, 'Tương Dương, Thị trấn Di Lăng, Huyện Sơn Hà, Tỉnh Quảng Ngãi'),
+('KH005', NULL, 'a', 'b', NULL, 'Cà Mau'),
+('KH006', NULL, 'a', 'd', NULL, 'Ư Ma, Xã Pa ủ, Huyện Mường Tè, Tỉnh Lai Châu'),
+('KH007', NULL, 'a', 'ư', NULL, 'Huyện Ea H\'leo, Đắk Lắk'),
+('KH008', NULL, 'Chu Công Cẩn', '0978321313', NULL, 'Giang Đông, Thị trấn Sịa, Huyện Quảng Điền, Tỉnh Thừa Thiên Huế'),
+('KH009', NULL, 'a', 'bc', NULL, 'Quận Cầu Giấy, Thành phố Hà Nội'),
+('KH010', NULL, 'Lỗ Tử Kính', '0312123123', NULL, 'Khẩu trang Bảo Tiến, Trương Văn Lực, Cam Lộ, Hùng Vương, Hồng Bàng, Hải Phòng'),
+('KH011', NULL, 'anh Tuyến', '12344441223123', NULL, 'Mạc Xá, Xã Tân Hồng, Huyện Bình Giang, Tỉnh Hải Dương'),
+('KH012', NULL, 'Lỗ Tử Kính', '0987231231', NULL, 'Giang Nam, Thị trấn Kiến Xương, Huyện Kiến Xương, Tỉnh Thái Bình'),
+('KH013', NULL, 'Chu Công Cẩn', '0987231123', NULL, 'Bờ Sông, Xín Cái, Mèo Vạc, Hà Giang');
 
 --
 -- Triggers `khachhang`
@@ -335,7 +335,7 @@ CREATE TABLE `taikhoan` (
   `sdt` varchar(100) NOT NULL,
   `trangThai` varchar(100) NOT NULL,
   `token` varchar(255) NOT NULL,
-  `hetHanToken` datetime DEFAULT NULL
+  `hetHanToken` datetime NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
@@ -343,11 +343,9 @@ CREATE TABLE `taikhoan` (
 --
 
 INSERT INTO `taikhoan` (`maTaiKhoan`, `maQuyen`, `tenDangNhap`, `matKhau`, `email`, `sdt`, `trangThai`, `token`, `hetHanToken`) VALUES
-('TKadmin', 'admin', 'admin', '1234', 'trandinhtuyen18@gmail.com', '0963421148', 'Kích hoạt', '', NULL),
-('TKKH001', 'khachhang', 'khachhang1', '1234', '1234@gmail.com', '0123456789', 'Kích hoạt', '', NULL),
-('TKKH002', 'khachhang', 'datcongh', '1234', 'datcongh431@gmail.com', '0367860614', 'Đang hoạt động', '', NULL),
-('TKKH003', 'khachhang', 'datcongh1', '1234', 'datcongh4231@gmail.com', '03678606141', 'Đang hoạt động', '', NULL),
-('TKNV001', 'nhanvien', 'nhanvien1', 'cvcxv', 'datcongh43@gmail.com', '0999123123', 'Kích hoạt', '49db04c21e6726c0117d10a871d5025bd8c4d784fd52e999ffb04d89de469b74', '2024-11-29 14:12:40');
+('TKadmin', 'admin', 'admin', '1234', 'trandinhtuyen18@gmail.com', '0963421148', 'Kích hoạt', '', '0000-00-00 00:00:00'),
+('TKKH001', 'khachhang', 'khachhang1', '1234', '1234@gmail.com', '0123456789', 'Kích hoạt', '', '0000-00-00 00:00:00'),
+('TKNV001', 'nhanvien', 'nhanvien1', '1234', 'datcongh43@gmail.com', '0999123123', 'Kích hoạt', '', '0000-00-00 00:00:00');
 
 --
 -- Triggers `taikhoan`
@@ -440,16 +438,16 @@ CREATE TABLE `thucdon` (
 --
 
 INSERT INTO `thucdon` (`maMonAn`, `tenMonAn`, `hinhAnhMonAn`, `loaiMonAn`, `buaSangTruaToi`, `moTa`, `gia`, `tinhTrang`, `deCuMonAn`) VALUES
-('MA001', 'Phở Bò', 'public/image/pho_bo.jpg', 'Món nước', 'Sáng', 'Phở bò truyền thống Việt Nam', 45000.00, 'Đang còn món', 1),
-('MA002', 'Bún Chả', 'images/bun_cha.jpg', 'Món nước', 'Trưa', 'Bún chả Hà Nội, đậm đà vị truyền thống', 50000.00, 'Đang còn món', 0),
-('MA003', 'Cơm Tấm', 'images/com_tam.jpg', 'Món cơm', 'Trưa', 'Cơm tấm sườn bì chả, ăn kèm nước mắm chua ngọt', 40000.00, 'Đang còn món', 1),
-('MA004', 'Bánh Mì Thịt', 'images/banh_mi_thit.jpg', 'Món ăn nhanh', 'Sáng', 'Bánh mì thịt với các loại rau củ và nước sốt đặc biệt', 25000.00, 'Đang còn món', 0),
-('MA005', 'Gỏi Cuốn', 'images/goi_cuon.jpg', 'Món khai vị', 'Tối', 'Gỏi cuốn tôm thịt, ăn kèm nước chấm chua ngọt', 30000.00, 'Đang còn món', 1),
-('MA006', 'Mì Quảng', 'images/mi_quang.jpg', 'Món nước', 'Trưa', 'Mì Quảng tôm thịt, đặc sản miền Trung', 55000.00, 'Đang còn món', 0),
-('MA007', 'Cháo Lòng', 'images/chao_long.jpg', 'Món nước', 'Sáng', 'Cháo lòng, ăn kèm dồi và nước mắm gừng', 35000.00, 'Tạm hết món', 0),
-('MA008', 'Lẩu Thái', 'images/lau_thai.jpg', 'Món chính', 'Tối', 'Lẩu Thái cay nồng, thích hợp cho bữa tối gia đình', 250000.00, 'Đang còn món', 1),
-('MA009', 'Gà Nướng', 'images/ga_nuong.jpg', 'Món chính', 'Tối', 'Gà nướng mật ong, thịt mềm thơm', 200000.00, 'Đang còn món', 0),
-('MA010', 'Bánh Xèo', 'images/banh_xeo.jpg', 'Món ăn vặt', 'Tối', 'Bánh xèo miền Tây, giòn rụm, ăn kèm rau sống', 45000.00, 'Đang còn món', 1);
+('MA001', 'Phở Bò', 'public/image/dish/pho_bo.jpg', 'Món nước', 'Sáng', 'Phở bò truyền thống Việt Nam', 45000.00, 'Đang còn món', 1),
+('MA002', 'Bún Chả', 'public/image/dish/bun_cha.jpg', 'Món nước', 'Trưa', 'Bún chả Hà Nội, đậm đà vị truyền thống', 50000.00, 'Đang còn món', 0),
+('MA003', 'Cơm Tấm', 'public/image/dish/com_tam.jpg', 'Món cơm', 'Trưa', 'Cơm tấm sườn bì chả, ăn kèm nước mắm chua ngọt', 40000.00, 'Đang còn món', 1),
+('MA004', 'Bánh Mì Thịt', 'public/image/dish/banh_mi_thit.jpg', 'Món ăn nhanh', 'Sáng', 'Bánh mì thịt với các loại rau củ và nước sốt đặc biệt', 25000.00, 'Đang còn món', 0),
+('MA005', 'Gỏi Cuốn', 'public/image/dish/goi_cuon.jpg', 'Món khai vị', 'Tối', 'Gỏi cuốn tôm thịt, ăn kèm nước chấm chua ngọt', 30000.00, 'Đang còn món', 1),
+('MA006', 'Mì Quảng', 'public/image/dish/mi_quang.jpg', 'Món nước', 'Trưa', 'Mì Quảng tôm thịt, đặc sản miền Trung', 55000.00, 'Đang còn món', 0),
+('MA007', 'Cháo Lòng', 'public/image/dish/chao_long.jpg', 'Món nước', 'Sáng', 'Cháo lòng, ăn kèm dồi và nước mắm gừng', 35000.00, 'Đang còn món', 0),
+('MA008', 'Lẩu Thái', 'public/image/dish/lau_thai.jpg', 'Món chính', 'Tối', 'Lẩu Thái cay nồng, thích hợp cho bữa tối gia đình', 250000.00, 'Đang còn món', 1),
+('MA009', 'Gà Nướng', 'public/image/dish/ga_nuong.jpg', 'Món chính', 'Tối', 'Gà nướng mật ong, thịt mềm thơm', 200000.00, 'Đang còn món', 0),
+('MA010', 'Bánh Xèo', 'public/image/dish/banh_xeo.jpg', 'Món ăn vặt', 'Tối', 'Bánh xèo miền Tây, giòn rụm, ăn kèm rau sống', 45000.00, 'Đang còn món', 1);
 
 --
 -- Triggers `thucdon`
@@ -527,8 +525,7 @@ ALTER TABLE `chitietdonhang`
 ALTER TABLE `chungminhgiaodich`
   ADD PRIMARY KEY (`maChungMinh`),
   ADD UNIQUE KEY `duongDanAnh` (`duongDanAnh`),
-  ADD UNIQUE KEY `duongDanAnh_2` (`duongDanAnh`),
-  ADD KEY `fk_chungminhgiaodich_giaodich` (`maGiaoDich`);
+  ADD KEY `fk_chungminhgiaodich_hoadon` (`maHoaDon`);
 
 --
 -- Indexes for table `danhgiadonhang`
@@ -623,7 +620,7 @@ ALTER TABLE `chitietdonhang`
 -- Constraints for table `chungminhgiaodich`
 --
 ALTER TABLE `chungminhgiaodich`
-  ADD CONSTRAINT `fk_chungminhgiaodich_giaodich` FOREIGN KEY (`maGiaoDich`) REFERENCES `giaodich` (`maGiaoDich`);
+  ADD CONSTRAINT `fk_chungminhgiaodich_hoadon` FOREIGN KEY (`maHoaDon`) REFERENCES `hoadon` (`maHoaDon`);
 
 --
 -- Constraints for table `danhgiadonhang`

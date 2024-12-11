@@ -1,4 +1,5 @@
 <?php
+require_once 'config/database.php';
 class ThucDonModel {
     private $pdo;
 
@@ -8,10 +9,14 @@ class ThucDonModel {
 
     // Lấy danh sách món ăn
     public function layDanhSachMonAn() {
-        $sql = "SELECT hinhAnhMonAn, tenMonAn, gia FROM thucdon WHERE tinhTrang = 'Còn hàng'";
-        $stmt = $this->pdo->prepare($sql);
-        $stmt->execute();
-        return $stmt->fetchAll(PDO::FETCH_ASSOC); // Trả về dạng mảng
+        try {
+            $stmt = $this->pdo->prepare("SELECT * FROM thucDon");
+            $stmt->execute();
+            return $stmt->fetchAll(PDO::FETCH_ASSOC); // Trả về danh sách món ăn
+        } catch (PDOException $e) {
+            echo "Lỗi truy vấn: " . $e->getMessage();
+            return [];
+        }
     }
 
     // Tìm kiếm món ăn theo tên

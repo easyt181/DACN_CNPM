@@ -23,5 +23,11 @@ class ThucDonController {
         // Truyền dữ liệu vào view (home.php)
         require_once './views/home.php';
     }
+
+    public function layDanhSachMonAn() {
+        return $this->thucDonModel->layDanhSachMonAn();
+    }
+
+
 }
 ?>

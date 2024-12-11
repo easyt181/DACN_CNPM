@@ -32,10 +32,37 @@ const transactionImage = $('#transactionImage')[0].files[0];
 if (transactionImage) {
     formData.append('transactionImage', transactionImage);
 }
-    
 
     
 });
+
+function hienThiHoaDon(maDonHang) {
+    $.ajax({
+        url: 'index.php?controller=donhang&action=layHoaDon',
+        type: 'GET',
+        data: { maDonHangHienTai: maDonHang },
+        success: function(response) {
+            const data = JSON.parse(response);
+            if (data.success) {
+                const hoaDon = data.hoaDon;
+                $('#maHoaDon').text(hoaDon.maHoaDon);
+                $('#sdt').text(hoaDon.sdt)
+                $('#tenKH').text(hoaDon.tenKH);
+                $('#diaChiGiaoHang').text(hoaDon.diaChiGiaoHang);
+                $('#ngayTao').text(hoaDon.ngayTao);
+                $('#tongTien').text(formatCurrency(hoaDon.tongTien) + ' VNĐ');
+                $('#phuongThucThanhToan').text(hoaDon.phuongThucThanhToan);
+                $('#trangThaiHoaDon').text(hoaDon.trangThaiHoaDon);
+                $('#hoaDonModal').modal('show');
+            } else {
+                alert(data.message);
+            }
+        },
+        error: function() {
+            alert('Lỗi khi lấy thông tin hóa đơn.');
+        }
+    });
+}
 
 
 // Tìm kiếm món ăn

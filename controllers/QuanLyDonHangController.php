@@ -62,12 +62,21 @@ class QuanLyDonHangController
             return;
         }
         $chiTietDonHang = $this->chiTietDonHangModel->layChiTietDonHangTheoMaDonHang($maDonHang);
-        $hoaDonHienTai = $this->hoaDonModel->layThongTinHoaDon($maDonHang);
-        if(!$hoaDonHienTai){
-            echo "Hóa đơn không tồn tại!";
-            return;
-        }
+        
         require_once 'views/QuanLyDonHangUI/SuaDonHangUI.php';
+    }
+
+    public function layHoaDonTheoDonHang($maDonHang){
+        try {
+            $hoaDon = $this->hoaDonModel->layThongTinHoaDon($maDonHang);
+            if ($hoaDon && $hoaDon['trangThaiHoaDon'] !== 'Đã hủy') {
+                echo json_encode(['success' => true, 'hoaDon' => $hoaDon]);
+            } else {
+                echo json_encode(['success' => false, 'message' => 'Hóa đơn không tồn tại hoặc đã bị hủy.']);
+            }
+        } catch (Exception $e) {
+            echo json_encode(['success' => false, 'message' => $e->getMessage()]);
+        }
     }
     
     // Sửa đơn hàng

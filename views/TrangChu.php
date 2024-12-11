@@ -1,22 +1,13 @@
 <?php
-    include './config/database.php';
+require_once 'controllers/ThucDonController.php';
+$thucDonController = new ThucDonController($pdo);
+$result = $thucDonController->layDanhSachMonAn();
+if(!$result){
+    echo "Không có món ăn nào!";
+}else{
+    echo "CÓ MÓN ĂN";
+}
 
-    try {
-        // Lấy dữ liệu từ bảng thucdon
-        $sql = "SELECT * FROM thucdon";
-        $result = $pdo->query($sql);
-
-        // Lấy thông tin khách hàng với maKH = 'KH001'
-        $_SESSION['maTaiKhoan'] = 'TKKH003';
-
-        $cart = isset($_COOKIE['cart']) ? json_decode($_COOKIE['cart'], true) : [];
-        setcookie('cart', json_encode($cart), time() + 800000, "/");
-
-    } catch (PDOException $e) {
-        // Xử lý lỗi truy vấn hoặc kết nối
-        echo "Lỗi: " . $e->getMessage();
-        exit;
-    }
 ?>
 
 
@@ -41,8 +32,7 @@
                 </tr>
             </thead>
             <tbody>
-            <?php if ($result && $result->rowCount() > 0): ?>
-                <?php foreach ($result->fetchAll(PDO::FETCH_ASSOC) as $row): ?>
+                <?php foreach ($result as $row): ?>
                     <tr>
                         <td>
                             <img src="<?= htmlspecialchars($row['hinhAnhMonAn']) ?>" alt="Hình ảnh món ăn" style="width: 100px;">
@@ -56,11 +46,6 @@
                         </td>
                     </tr>
                 <?php endforeach; ?>
-            <?php else: ?>
-                <tr>
-                    <td colspan="4">Không có món ăn nào trong thực đơn.</td>
-                </tr>
-            <?php endif; ?>
 
             </tbody>
         </table>

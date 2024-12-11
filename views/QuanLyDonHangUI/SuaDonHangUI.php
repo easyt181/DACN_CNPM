@@ -12,6 +12,32 @@
 </head>
 
 <body>
+
+    <!-- Modal hóa đơn -->
+<div class="modal fade" id="hoaDonModal" tabindex="-1" aria-labelledby="hoaDonModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="hoaDonModalLabel">Thông Tin Hóa Đơn</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <p><strong>Mã Hóa Đơn:</strong> <span id="maHoaDon"></span></p>
+        <p><strong>Số Điện Thoại:</strong> <span id="sdt"></span></p>
+        <p><strong>Tên Khách Hàng:</strong> <span id="tenKH"></span></p>
+        <p><strong>Địa Chỉ Giao Hàng:</strong> <span id="diaChiGiaoHang"></span></p>    
+        <p><strong>Ngày Tạo:</strong> <span id="ngayTao"></span></p>
+        <p><strong>Tổng Tiền:</strong> <span id="tongTien"></span></p>
+        <p><strong>Phương Thức Thanh Toán:</strong> <span id="phuongThucThanhToan"></span></p>
+        <p><strong>Trạng Thái Hóa Đơn:</strong> <span id="trangThaiHoaDon"></span></p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+      </div>
+    </div>
+  </div>
+</div>
+
     <input type="hidden" id="maDonHang" value="<?= $donHang['maDonHang'] ?>">  
     <div class="container mt-5">
         <h2 class="text-center mb-4">SỬA ĐƠN HÀNG: <?= $donHang['maDonHang'] ?></h2>
@@ -70,15 +96,13 @@
                     <?php if($donHang['trangThaiThanhToan'] == "Đã thanh toán"){?>
                     <div class="payment-info">
                         <button type="button" style="width: 140px; float:right;" class="btn btn-warning action-button" aria-expanded="false" data-bs-auto-close="outside">Hoàn tiền</button>
-                        <button type="button" style="width: 140px; float:left;" class="btn btn-info action-button" aria-expanded="false" data-bs-auto-close="outside">Xem hóa đơn</button>
+                        <button type="button" onclick="hienThiHoaDon('<?= $donHang['maDonHang'] ?>')" style="width: 140px; float:left;" class="btn btn-info action-button" aria-expanded="false" data-bs-auto-close="outside">Xem hóa đơn</button>
                     </div>
                     <?php }else{ ?>
                     <div class="payment-info">
-                        <button type="button" style="width: 140px;" class="btn btn-info action-button" aria-expanded="false" data-bs-auto-close="outside">Xem hóa đơn</button>
+                        <button type="button" onclick="hienThiHoaDon('<?= $donHang['maDonHang'] ?>')" style="width: 140px;" class="btn btn-info action-button" aria-expanded="false" data-bs-auto-close="outside">Xem hóa đơn</button>
                     </div>
-                     <?php } ?>  
-
-
+                     <?php } ?>
                 </div>
             </div>
             <!-- Tìm kiếm món ăn -->

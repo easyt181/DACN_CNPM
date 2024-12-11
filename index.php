@@ -1,9 +1,5 @@
 <?php
 
-session_start(); // Tạm thời chưa có đăng nhập
-$_SESSION['maTaiKhoan'] = 'Test';    
-$_SESSION['maQuyen'] = 'admin'; 
-
 date_default_timezone_set('Asia/Ho_Chi_Minh');
 require_once 'config/database.php';  
 require_once 'controllers/QuanLyDonHangController.php';
@@ -27,9 +23,6 @@ if (session_status() === PHP_SESSION_NONE) {
 
 switch ($controller) {
     case 'donhang':
-        session_start(); // Tạm thời chưa có đăng nhập
-        $_SESSION['maTaiKhoan'] = 'TK001';    
-        $_SESSION['maQuyen'] = 'admin'; 
         $maTaiKhoanNV = $_SESSION['maTaiKhoan'];
         if(isset($_SESSION['maTaiKhoan']) && isset($_SESSION['maQuyen']) && strtolower($_SESSION['maQuyen']) == 'admin'){
             $donHangController = new QuanLyDonHangController($pdo);
@@ -56,6 +49,8 @@ switch ($controller) {
                 $donHangController->capNhatTTDonHang();
             }elseif($action == 'hienThiTrangSuaDonHang'){
                 $donHangController->hienThiTrangSuaDonHang();
+            }elseif($action == 'layHoaDon'){
+                    $donHangController->layHoaDonTheoDonHang($_GET['maDonHangHienTai']);
             }elseif ($action == 'suaDonHang') {
                 $donHangController->suaDonHang($_GET['maDonHang']);
             } elseif ($action == 'huyDonHang') {
