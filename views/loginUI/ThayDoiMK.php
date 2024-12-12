@@ -11,13 +11,19 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.6.10/dist/sweetalert2.min.js"></script>
 </head>
 <body>
-    <form action="index.php?controller=login&action=thayDoiMK" method="POST">
-        <input type="hidden" name="token" value="<?php echo $token?>">
-        <input type="hidden" name="thoiHan" value="<?php echo $thoiHan?>">
-        <label for="password">Mật khẩu mới:</label>
-        <input type="password" name="matKhau" required>
-        <button type="submit">Đặt lại mật khẩu</button>
-    </form>
+    <div class="container">
+        <form action="index.php?controller=login&action=thayDoiMK" method="POST">
+            
+        <h3>Đặt lại mật khẩu</h3>
+            <input type="hidden" name="token" value="<?php echo $token?>">
+            <input type="hidden" name="thoiHan" value="<?php echo $thoiHan?>">
+            <div class="input_password">
+                <label for="password">Mật khẩu mới:</label>
+                <input type="password" name="matKhau" class="form-control" placeholder="Username" aria-label="Username" aria-describedby="basic-addon1" required>
+            </div>
+            <button class="button_submit btn btn-primary mb-3" type="submit">Đặt lại mật khẩu</button>
+        </form>
+    </div>
 </body>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
 <script src="./public/js/ThayDoiMK.js"></script>

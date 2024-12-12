@@ -1,0 +1,31 @@
+*{
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+}
+html, body{
+    height: 100vh;
+}
+.container{
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+form{
+    
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+    padding: 50px 100px;
+}
+.input_password{
+    display: flex;
+    flex-direction: column;
+    
+}
+.input_password input{
+    margin-right: 30px;
+}
+.button_submit{
+    margin: 10px;
+    float: right;
+}
