@@ -598,7 +598,7 @@ setcookie('cart', json_encode($cart), time() + 3600, "/"); // 1 giờ
         <section class="newsletter">
             <h3>Đăng ký nhận tin mới</h3>
             <form action="">
-                <input type="email" name="" placeholder="nhập email ..." id="">
+                <input type="email" name="" placeholder="Nhập email ..." id="">
                 <input type="submit" value="subscribe">
             </form>
         </section>

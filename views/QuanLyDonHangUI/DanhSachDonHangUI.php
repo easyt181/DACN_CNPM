@@ -31,9 +31,9 @@
 
         <div class="row mb-3">
             <div class="col-6">
-                <a href="index.php?controller=donhang&action=hienThiTrangThemDonHang" target="_blank"><button type="button" class="btn btn-primary" aria-expanded="false" data-bs-auto-close="outside">
-                        Thêm đơn hàng
-                    </button></a>
+                <button type="button" id="addOrderButton" class="btn btn-primary" aria-expanded="false" data-bs-auto-close="outside">
+                    Thêm đơn hàng
+                </button>
             </div>
             <div class="col-6">
                 <form method="post" action="index.php?controller=donhang&action=timKiemDonHang">
@@ -90,7 +90,7 @@
                 </div>
             </div>
         </div>
-
+        
         <!-- Modal chọn lý do từ chối -->
         <div class="modal fade" id="lyDoTuChoiModal" tabindex="-1" aria-labelledby="lyDoTuChoiLabel" aria-hidden="true">
             <div class="modal-dialog">
@@ -130,60 +130,61 @@
         <div class="mb-3">
             <h5>ĐANG CHỜ XÁC NHẬN</h5>
             <div style="max-height: 1000px; overflow-y: auto;">
-            <table class="table table-bordered" style="border:2px outset black;">
-                <thead>
-                    <tr style="text-align:center;">
-                        <th style="width:100px;">Mã đơn hàng</th>
-                        <th>Tên khách hàng</th>
-                        <th>Số điện thoại</th>
-                        <th>Địa chỉ giao hàng</th>
-                        <th style="width:100px;">Ngày tạo</th>
-                        <th>Tổng tiền</th>
-                        <th style="width:140px;">Trạng thái thanh toán</th>
-                        <th style="width:140px;">Chi tiết đơn hàng</th>
-                        <th>Hành động</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <?php if($donHangsChoXacNhan == null): ?>
-                        <tr>
-                            <td colspan="9" style="text-align:center;">Không có đơn hàng nào được gửi đến.</td>
+                <table class="table table-bordered" style="border:2px outset black;">
+                    <thead>
+                        <tr style="text-align:center;">
+                            <th style="width:100px;">Mã đơn hàng</th>
+                            <th>Tên khách hàng</th>
+                            <th>Số điện thoại</th>
+                            <th>Địa chỉ giao hàng</th>
+                            <th style="width:100px;">Ngày tạo</th>
+                            <th>Tổng tiền</th>
+                            <th style="width:140px;">Trạng thái thanh toán</th>
+                            <th style="width:140px;">Chi tiết đơn hàng</th>
+                            <th>Hành động</th>
                         </tr>
-                    <?php else:  
-                    foreach ($donHangsChoXacNhan as $donHang): ?>
-                        <tr>
-                            <td><?= $donHang['maDonHang'] ?></td>
-                            <td><?= $donHang['tenKH'] ?></td>
-                            <td><?= $donHang['sdt'] ?></td>
-                            <td><?= $donHang['diaChiGiaoHang'] ?></td>
-                            <td><?= $donHang['ngayTao'] ?></td>
-                            <td><?= number_format($donHang['tongTien'], 0, ',', '.') ?> VNĐ</td>
-                            <td><?= $donHang['trangThaiThanhToan'] ?></td>
-                            <td>
-                                <button
-                                    type="button"
-                                    id="openModalButton"
-                                    style="width:140px;"
-                                    class="btn btn-info action-button"
-                                    data-bs-toggle="modal"
-                                    data-bs-target="#orderDetailsModal"
-                                    onclick="loadOrderDetails('<?= $donHang['maDonHang'] ?>')">
-                                    Xem chi tiết
-                                </button>
-                            </td>
-                            <td style="width:130px;">
-                                <a><button type="button" onclick="xacNhanDonHang('<?= $donHang['maDonHang'] ?>')" id="xacNhanDonHang" class="btn btn-success action-button" aria-expanded="false" data-bs-auto-close="outside">
-                                        Xác nhận
-                                    </button></a>
-                                <a><button type="button" onclick="hienFormTuChoi('<?= $donHang['maDonHang'] ?>')" id="tuChoiDonHang" class="btn btn-danger action-button" aria-expanded="false" data-bs-auto-close="outside">
-                                        Từ chối
-                                    </button></a>
-                            </td>
-                        </tr>
-                    <?php endforeach; endif;?>
-                   
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody>
+                        <?php if ($donHangsChoXacNhan == null): ?>
+                            <tr>
+                                <td colspan="9" style="text-align:center;">Không có đơn hàng nào được gửi đến.</td>
+                            </tr>
+                            <?php else:
+                            foreach ($donHangsChoXacNhan as $donHang): ?>
+                                <tr>
+                                    <td><?= $donHang['maDonHang'] ?></td>
+                                    <td><?= $donHang['tenKH'] ?></td>
+                                    <td><?= $donHang['sdt'] ?></td>
+                                    <td><?= $donHang['diaChiGiaoHang'] ?></td>
+                                    <td><?= $donHang['ngayTao'] ?></td>
+                                    <td><?= number_format($donHang['tongTien'], 0, ',', '.') ?> VNĐ</td>
+                                    <td><?= $donHang['trangThaiThanhToan'] ?></td>
+                                    <td>
+                                        <button
+                                            type="button"
+                                            id="openModalButton"
+                                            style="width:140px;"
+                                            class="btn btn-info action-button"
+                                            data-bs-toggle="modal"
+                                            data-bs-target="#orderDetailsModal"
+                                            onclick="loadOrderDetails('<?= $donHang['maDonHang'] ?>')">
+                                            Xem chi tiết
+                                        </button>
+                                    </td>
+                                    <td style="width:130px;">
+                                        <a><button type="button" onclick="xacNhanDonHang('<?= $donHang['maDonHang'] ?>')" id="xacNhanDonHang" class="btn btn-success action-button" aria-expanded="false" data-bs-auto-close="outside">
+                                                Xác nhận
+                                            </button></a>
+                                        <a><button type="button" onclick="hienFormTuChoi('<?= $donHang['maDonHang'] ?>')" id="tuChoiDonHang" class="btn btn-danger action-button" aria-expanded="false" data-bs-auto-close="outside">
+                                                Từ chối
+                                            </button></a>
+                                    </td>
+                                </tr>
+                        <?php endforeach;
+                        endif; ?>
+
+                    </tbody>
+                </table>
             </div>
         </div>
         <hr>
@@ -191,92 +192,93 @@
         <div class="mb-3">
             <h5>ĐANG XỬ LÝ</h5>
             <div style="max-height: 1000px; overflow-y: auto;">
-            <table class="table table-bordered" style="border:2px outset black;">
-                <thead>
-                    <tr style="text-align:center;">
-                        <th style="width:100px;">Mã đơn hàng</th>
-                        <th>Tên khách hàng</th>
-                        <th>Số điện thoại</th>
-                        <th>Địa chỉ giao hàng</th>
-                        <th style="width:100px;">Ngày tạo</th>
-                        <th>Tổng tiền</th>
-                        <th style="width:140px;">Trạng thái đơn hàng</th>
-                        <th style="width:140px;">Chi tiết đơn hàng</th>
-                        <th>Hành động</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <?php if($donHangsDangXuLy == null): ?>
-                        <tr>
-                            <td colspan="9" style="text-align:center;">Không có đơn hàng đang thực hiện nào.</td>
+                <table class="table table-bordered" style="border:2px outset black;">
+                    <thead>
+                        <tr style="text-align:center;">
+                            <th style="width:100px;">Mã đơn hàng</th>
+                            <th>Tên khách hàng</th>
+                            <th>Số điện thoại</th>
+                            <th>Địa chỉ giao hàng</th>
+                            <th style="width:100px;">Ngày tạo</th>
+                            <th>Tổng tiền</th>
+                            <th style="width:140px;">Trạng thái đơn hàng</th>
+                            <th style="width:140px;">Chi tiết đơn hàng</th>
+                            <th>Hành động</th>
                         </tr>
-                    <?php else: 
-                    foreach ($donHangsDangXuLy as $donHang): ?>
-                        <tr>
-                            <td><?= $donHang['maDonHang'] ?></td>
-                            <td><?= $donHang['tenKH'] ?></td>
-                            <td><?= $donHang['sdt'] ?></td>
-                            <td><?= $donHang['diaChiGiaoHang'] ?></td>
-                            <td><?= $donHang['ngayTao'] ?></td>
-                            <td><?= number_format($donHang['tongTien'], 0, ',', '.') ?> VNĐ</td>
-                            <td><?= $donHang['trangThaiDonHang'] ?></td>
-                            <td>
-                                <button
-                                    type="button"
-                                    style="width:140px;"
-                                    id="openModalButton"
-                                    class="btn btn-info action-button"
-                                    data-bs-toggle="modal"
-                                    data-bs-target="#orderDetailsModal"
-                                    onclick="loadOrderDetails('<?= $donHang['maDonHang'] ?>')">
-                                    Xem chi tiết
-                                </button>
-                            </td>
+                    </thead>
+                    <tbody>
+                        <?php if ($donHangsDangXuLy == null): ?>
+                            <tr>
+                                <td colspan="9" style="text-align:center;">Không có đơn hàng đang thực hiện nào.</td>
+                            </tr>
+                            <?php else:
+                            foreach ($donHangsDangXuLy as $donHang): ?>
+                                <tr>
+                                    <td><?= $donHang['maDonHang'] ?></td>
+                                    <td><?= $donHang['tenKH'] ?></td>
+                                    <td><?= $donHang['sdt'] ?></td>
+                                    <td><?= $donHang['diaChiGiaoHang'] ?></td>
+                                    <td><?= $donHang['ngayTao'] ?></td>
+                                    <td><?= number_format($donHang['tongTien'], 0, ',', '.') ?> VNĐ</td>
+                                    <td><?= $donHang['trangThaiDonHang'] ?></td>
+                                    <td>
+                                        <button
+                                            type="button"
+                                            style="width:140px;"
+                                            id="openModalButton"
+                                            class="btn btn-info action-button"
+                                            data-bs-toggle="modal"
+                                            data-bs-target="#orderDetailsModal"
+                                            onclick="loadOrderDetails('<?= $donHang['maDonHang'] ?>')">
+                                            Xem chi tiết
+                                        </button>
+                                    </td>
 
-                            <td style="width:170px;">
-                                <?php if ($donHang['trangThaiDonHang'] == 'Đang chuẩn bị'): ?>
-                                    <a>
-                                        <button type="button" onclick="capNhatTTDonHang('<?= $donHang['maDonHang'] ?>', '<?= $donHang['trangThaiDonHang'] ?>')" style="width: 140px; margin: 5px 10px;" class="btn btn-success action-button" aria-expanded="false" data-bs-auto-close="outside">
-                                            Giao hàng
-                                        </button>
-                                    </a>
-                                    <a>
-                                        <button type="button" style="width: 140px; margin: 5px 10px;" class="btn btn-warning action-button" aria-expanded="false" data-bs-auto-close="outside">
-                                            Sửa đơn hàng
-                                        </button>
-                                    </a>
-                                    <a>
-                                        <button type="button" onclick="hienFormTuChoi('<?= $donHang['maDonHang'] ?>')" style="width: 140px; margin: 5px 10px;" class="btn btn-danger action-button" aria-expanded="false" data-bs-auto-close="outside">
-                                            Hủy đơn hàng
-                                        </button>
-                                    </a>
-                                <?php elseif (
-                                    $donHang['trangThaiDonHang'] == 'Đang chờ hoàn tiền - Đã bị hủy bởi khách hàng' ||
-                                    $donHang['trangThaiDonHang'] == 'Đang chờ hoàn tiền - Đã bị hủy bởi quản lý'
-                                ): ?>
-                                    <a>
-                                        <button type="button" style="width: 140px; margin: 5px 10px;" class="btn btn-warning action-button" aria-expanded="false" data-bs-auto-close="outside">
-                                            Hoàn tiền
-                                        </button>
-                                    </a>
-                                <?php elseif ($donHang['trangThaiDonHang'] == 'Đang giao hàng'): ?>
-                                    <a>
-                                        <button type="button" onclick="capNhatTTDonHang('<?= $donHang['maDonHang'] ?>', '<?= $donHang['trangThaiDonHang'] ?>')" style="width: 140px; margin: 5px 10px;" class="btn btn-success action-button" aria-expanded="false" data-bs-auto-close="outside">
-                                            Hoàn thành
-                                        </button>
-                                    </a>
-                                    <a>
-                                        <button type="button" style="width: 140px; margin: 5px 10px;" class="btn btn-danger action-button" aria-expanded="false" data-bs-auto-close="outside">
-                                            Đơn rủi ro
-                                        </button>
-                                    </a>
-                                <?php endif; ?>
-                            </td>
-                        </tr>
-                    <?php endforeach; endif; ?>
-                
-                </tbody>
-            </table>
+                                    <td style="width:170px;">
+                                        <?php if ($donHang['trangThaiDonHang'] == 'Đang chuẩn bị'): ?>
+                                            <a>
+                                                <button type="button" onclick="capNhatTTDonHang('<?= $donHang['maDonHang'] ?>', '<?= $donHang['trangThaiDonHang'] ?>')" style="width: 140px; margin: 5px 10px;" class="btn btn-success action-button" aria-expanded="false" data-bs-auto-close="outside">
+                                                    Giao hàng
+                                                </button>
+                                            </a>
+                                            <a>
+                                                <button type="button" onclick="suaDonHangButton('<?= $donHang['maDonHang'] ?>')" style="width: 140px; margin: 5px 10px;" class="btn btn-warning action-button" data-bs-toggle="dropdown" aria-expanded="false" data-bs-auto-close="outside">
+                                                    Sửa đơn hàng
+                                                </button>
+                                            </a>
+                                            <a>
+                                                <button type="button" onclick="hienFormTuChoi('<?= $donHang['maDonHang'] ?>')" style="width: 140px; margin: 5px 10px;" class="btn btn-danger action-button" aria-expanded="false" data-bs-auto-close="outside">
+                                                    Hủy đơn hàng
+                                                </button>
+                                            </a>
+                                        <?php elseif (
+                                            $donHang['trangThaiDonHang'] == 'Đang chờ hoàn tiền - Đã bị hủy bởi khách hàng' ||
+                                            $donHang['trangThaiDonHang'] == 'Đang chờ hoàn tiền - Đã bị hủy bởi quản lý'
+                                        ): ?>
+                                            <a>
+                                                <button type="button" style="width: 140px; margin: 5px 10px;" class="btn btn-warning action-button" aria-expanded="false" data-bs-auto-close="outside">
+                                                    Hoàn tiền
+                                                </button>
+                                            </a>
+                                        <?php elseif ($donHang['trangThaiDonHang'] == 'Đang giao hàng'): ?>
+                                            <a>
+                                                <button type="button" onclick="capNhatTTDonHang('<?= $donHang['maDonHang'] ?>', '<?= $donHang['trangThaiDonHang'] ?>')" style="width: 140px; margin: 5px 10px;" class="btn btn-success action-button" aria-expanded="false" data-bs-auto-close="outside">
+                                                    Hoàn thành
+                                                </button>
+                                            </a>
+                                            <a>
+                                                <button type="button" style="width: 140px; margin: 5px 10px;" class="btn btn-danger action-button" aria-expanded="false" data-bs-auto-close="outside">
+                                                    Đơn rủi ro
+                                                </button>
+                                            </a>
+                                        <?php endif; ?>
+                                    </td>
+                                </tr>
+                        <?php endforeach;
+                        endif; ?>
+
+                    </tbody>
+                </table>
             </div>
         </div>
         <hr>
@@ -284,46 +286,46 @@
         <div class="mb-3">
             <h5>ĐÃ XỬ LÝ XONG</h5>
             <div style="max-height: 500px; overflow-y: auto;">
-            <table class="table table-bordered" style="border:2px outset black;">
-                <tr>
-                    <th style="width:100px;">Mã đơn hàng</th>
-                    <th>Tên khách hàng</th>
-                    <th>Số điện thoại</th>
-                    <th>Địa chỉ giao hàng</th>
-                    <th style="width:100px;">Ngày tạo</th>
-                    <th>Tổng tiền</th>
-                    <th style="width:140px;">Trạng thái thanh toán</th>
-                    <th style="width:140px;">Trạng thái đơn hàng</th>
-                    <th style="width:140px;">Chi tiết đơn hàng</th>
-                </tr>
-                </thead>
-                <tbody>
-                    <?php foreach ($donHangsDaXuLyXong as $donHang): ?>
-                        <tr>
-                            <td><?= $donHang['maDonHang'] ?></td>
-                            <td><?= $donHang['tenKH'] ?></td>
-                            <td><?= $donHang['sdt'] ?></td>
-                            <td><?= $donHang['diaChiGiaoHang'] ?></td>
-                            <td><?= $donHang['ngayTao'] ?></td>
-                            <td><?= number_format($donHang['tongTien'], 0, ',', '.') ?> VNĐ</td>
-                            <td><?= $donHang['trangThaiThanhToan'] ?></td>
-                            <td><?= $donHang['trangThaiDonHang'] ?></td>
-                            <td>
-                                <button
-                                    type="button"
-                                    style="width:140px;"
-                                    id="openModalButton"
-                                    class="btn btn-info action-button"
-                                    data-bs-toggle="modal"
-                                    data-bs-target="#orderDetailsModal"
-                                    onclick="loadOrderDetails('<?= $donHang['maDonHang'] ?>')">
-                                    Xem chi tiết
-                                </button>
-                            </td>
-                        </tr>
-                    <?php endforeach; ?>
-                </tbody>
-            </table>
+                <table class="table table-bordered" style="border:2px outset black;">
+                    <tr>
+                        <th style="width:100px;">Mã đơn hàng</th>
+                        <th>Tên khách hàng</th>
+                        <th>Số điện thoại</th>
+                        <th>Địa chỉ giao hàng</th>
+                        <th style="width:100px;">Ngày tạo</th>
+                        <th>Tổng tiền</th>
+                        <th style="width:140px;">Trạng thái thanh toán</th>
+                        <th style="width:140px;">Trạng thái đơn hàng</th>
+                        <th style="width:140px;">Chi tiết đơn hàng</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                        <?php foreach ($donHangsDaXuLyXong as $donHang): ?>
+                            <tr>
+                                <td><?= $donHang['maDonHang'] ?></td>
+                                <td><?= $donHang['tenKH'] ?></td>
+                                <td><?= $donHang['sdt'] ?></td>
+                                <td><?= $donHang['diaChiGiaoHang'] ?></td>
+                                <td><?= $donHang['ngayTao'] ?></td>
+                                <td><?= number_format($donHang['tongTien'], 0, ',', '.') ?> VNĐ</td>
+                                <td><?= $donHang['trangThaiThanhToan'] ?></td>
+                                <td><?= $donHang['trangThaiDonHang'] ?></td>
+                                <td>
+                                    <button
+                                        type="button"
+                                        style="width:140px;"
+                                        id="openModalButton"
+                                        class="btn btn-info action-button"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#orderDetailsModal"
+                                        onclick="loadOrderDetails('<?= $donHang['maDonHang'] ?>')">
+                                        Xem chi tiết
+                                    </button>
+                                </td>
+                            </tr>
+                        <?php endforeach; ?>
+                    </tbody>
+                </table>
             </div>
         </div>
 

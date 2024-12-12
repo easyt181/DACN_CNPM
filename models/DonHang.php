@@ -8,16 +8,29 @@ class DonHang {
     }
 
     public function themDonHang($data) {
-        $query = "INSERT INTO donhang (maKH, maTaiKhoanNV, maUuDaiDH, ngayTao, phuongThucThanhToan, diaChiGiaoHang, khoangCachGiaoHang, phiShip, tongTienCongTru, tongTien, trangThaiThanhToan, trangThaiDonHang, ghiChu) 
-                  VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)";
+        $query = "INSERT INTO donhang (maDonHang, maKH, maTaiKhoanNV, maUuDaiDH, ngayTao, phuongThucThanhToan, diaChiGiaoHang, khoangCachGiaoHang, phiShip, tongTienCongTru, tongTien, trangThaiThanhToan, trangThaiDonHang, ghiChu) 
+                  VALUES (?, ?,?,?,?,?,?,?,?,?,?,?,?,?)";
         $stmt = $this->db->prepare($query);
         $stmt->execute([
-            $data['maKH'], $data['maTaiKhoanNV'], $data['maUuDaiDH'], $data['ngayTao'], $data['phuongThucThanhToan'], 
+            $data['maDonHang'], $data['maKH'], $data['maTaiKhoanNV'], $data['maUuDaiDH'], $data['ngayTao'], $data['phuongThucThanhToan'], 
             $data['diaChiGiaoHang'], $data['khoangCachGiaoHang'], $data['phiShip'], $data['tongTienCongTru'], $data['tongTien'], 
             $data['trangThaiThanhToan'], $data['trangThaiDonHang'], $data['ghiChu']
         ]);
-        return true;  
+        $maDonHang = $this->lastInsertId($data['ngayTao']);
+        return $maDonHang;  
     }
+    
+    public function kiemTraDonHang($maDonHang){
+        $stmt = $this->db->prepare("SELECT COUNT(*) FROM DonHang WHERE maDonHang = ?");
+        $stmt->execute([$maDonHang]);
+        $result = $stmt->fetchColumn();
+        if($result > 0){
+            return true;
+        }else{
+            return false;
+        }
+    }
+
     public function lastInsertId($ngayTao) {
         $sql = "SELECT maDonHang FROM DonHang WHERE ngayTao = '$ngayTao'";  
         $stmt = $this->db->prepare($sql);
@@ -31,7 +44,6 @@ class DonHang {
         $stmt->execute([$trangThaiThanhToan,$trangThaiMoi, $maDonHang]);
         return true;    
     }
-
 
     public function xacNhanDonHang($maTaiKhoanNV, $maDonHang) {
         $stmt = $this->db->prepare("UPDATE DonHang SET trangThaiDonHang = 'Đang chuẩn bị', maTaiKhoanNV = ? WHERE maDonHang = ?");
@@ -59,7 +71,6 @@ class DonHang {
 
     public function timKiemDonHang($nhomTrangThai, $tuKhoa) {
         try {
-            // Câu truy vấn SQL với điều kiện tìm kiếm từ khóa
             $query = "SELECT 
                         donhang.maDonHang, 
                         donhang.ngayTao, 
@@ -72,30 +83,21 @@ class DonHang {
                       FROM donhang 
                       INNER JOIN hoadon ON donhang.maDonHang = hoadon.maDonHang
                       WHERE donhang.trangThaiDonHang IN (" . implode(", ", array_fill(0, count($nhomTrangThai), "?")) . ")";
-    
-            // Nếu từ khóa tìm kiếm không rỗng, thêm điều kiện vào câu truy vấn
+
             if (!empty($tuKhoa)) {
                 $query .= " AND (hoadon.tenKH LIKE ? OR hoadon.sdt LIKE ? OR donhang.maDonHang LIKE ?)";
             }
-    
-            // Chuẩn bị câu truy vấn
+
             $stmt = $this->db->prepare($query);
-    
-            // Mảng các tham số đầu vào (trạng thái đơn hàng)
             $params = $nhomTrangThai;
-    
-            // Nếu có từ khóa tìm kiếm, thêm vào mảng tham số
+
             if (!empty($tuKhoa)) {
                 $searchTerm = "%" . $tuKhoa . "%";
                 $params = array_merge($params, [$searchTerm, $searchTerm, $searchTerm]);
             }
-    
-            // Thực thi câu truy vấn với tham số
+
             $stmt->execute($params);
-    
-            // Lấy kết quả trả về
             $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
-            
             return $result;
     
         } catch (PDOException $e) {
@@ -104,8 +106,6 @@ class DonHang {
         }
     }
     
-
-
     public function layDSDonHang($nhomTrangThai) {
         try {
             $query = "SELECT 
@@ -119,7 +119,8 @@ class DonHang {
                         hoadon.sdt
                       FROM donhang 
                       INNER JOIN hoadon ON donhang.maDonHang = hoadon.maDonHang
-                      WHERE donhang.trangThaiDonHang IN (" . implode(", ", array_fill(0, count($nhomTrangThai), "?")) . ")";
+                      WHERE donhang.trangThaiDonHang IN (" . implode(", ", array_fill(0, count($nhomTrangThai), "?")) . ")
+                      ORDER BY donhang.ngayTao DESC";  // Thêm sắp xếp theo ngayTao giảm dần
             
             $stmt = $this->db->prepare($query);
             $stmt->execute($nhomTrangThai);
@@ -136,6 +137,7 @@ class DonHang {
             $query = "
             SELECT 
             donhang.maDonHang, 
+            donhang.maUuDaiDH,
             donhang.ngayTao, 
             donhang.diaChiGiaoHang,
             donhang.tongTien, 

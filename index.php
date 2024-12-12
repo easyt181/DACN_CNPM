@@ -1,7 +1,5 @@
 <?php
 
-
-
 date_default_timezone_set('Asia/Ho_Chi_Minh');
 require_once 'config/database.php';  
 require_once 'controllers/QuanLyDonHangController.php';
@@ -25,7 +23,6 @@ if (session_status() === PHP_SESSION_NONE) {
 
 switch ($controller) {
     case 'donhang':
-        
         $maTaiKhoanNV = $_SESSION['maTaiKhoan'];
         if(isset($_SESSION['maTaiKhoan']) && isset($_SESSION['maQuyen']) && strtolower($_SESSION['maQuyen']) == 'admin'){
             $donHangController = new QuanLyDonHangController($pdo);
@@ -36,21 +33,24 @@ switch ($controller) {
             }elseif ($action == 'xacNhanDonHang'){
                     $donHangController->xacNhanDonHang($maTaiKhoanNV);
             }elseif ($action == 'hienThiTrangThemDonHang') {
-                $donHangController->hienThiTrangThemDonHang();
+                require_once 'views/QuanLyDonHangUI/ThemDonHangUI.php';
             }elseif($action == 'layChiTietDonHang'){
                 $donHangController->layChiTietDonHang();
             }elseif ($action == 'themDonHangQuanLy') {
-                $donHangController->themDonHangQuanLy();
+                $donHangController->themDonHangQuanLy($maTaiKhoanNV);
             }elseif($action == 'thanhToanQR'){
                 if(isset($_GET['maDonHang'])){
                     $maDonHang = $_GET['maDonHang'];
                     require_once 'views/ThanhToanQRCodeUI.php';
-                }
-                else {
+                }else {
                     echo "Không tìm thấy mã đơn hàng.";
                 }
             }elseif($action == 'capNhatTTDonHang'){
                 $donHangController->capNhatTTDonHang();
+            }elseif($action == 'hienThiTrangSuaDonHang'){
+                $donHangController->hienThiTrangSuaDonHang();
+            }elseif($action == 'layHoaDon'){
+                    $donHangController->layHoaDonTheoDonHang($_GET['maDonHangHienTai']);
             }elseif ($action == 'suaDonHang') {
                 $donHangController->suaDonHang($_GET['maDonHang']);
             } elseif ($action == 'huyDonHang') {

@@ -87,11 +87,11 @@ window.onclick = function(event) {
                 </div>
                 <span>OR</span>
                 <div class="infield">
-                    <input type="text" placeholder="Ten tai khoan" name="tenDangNhap" id="tenDangNhap" autocomplete="off" required>
+                    <input type="text" placeholder="Tên tài khoản" name="tenDangNhap" id="tenDangNhap" autocomplete="off" required>
                     <label></label>
                 </div>
                 <div class="infield">
-                    <input type="password" placeholder="Password" name="matKhau" id="matKhau" autocomplete="off" required>
+                    <input type="password" placeholder="Mật khẩu" name="matKhau" id="matKhau" autocomplete="off" required>
                     <label></label>
                 </div>
                 <a href="index?controller=login&action=hienThiLayLaiMK" class="forgot">Bạn quên mật khẩu?</a>
