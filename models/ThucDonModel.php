@@ -26,5 +26,13 @@ class ThucDonModel {
         $stmt->execute(['tuKhoa' => '%' . $tuKhoa . '%']);
         return $stmt->fetchAll(PDO::FETCH_ASSOC); // Trả về kết quả tìm kiếm
     }
+    public function danhSachMonAnGioHang($maMonAn) {
+        // Câu truy vấn dùng dấu ? làm placeholder
+        $sql = "SELECT * FROM thucdon WHERE maMonAn LIKE ?";
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute(['%' . $maMonAn . '%']);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+    
 }
 ?>

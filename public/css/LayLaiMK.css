@@ -12,6 +12,7 @@ html, body{
     height: 100%;
     display: flex;
     align-items: center;
+    justify-content: center;
 }
 .box {
     box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);

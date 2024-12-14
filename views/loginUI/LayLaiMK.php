@@ -1,3 +1,5 @@
+<?php
+require_once 'C:\xampp\htdocs\DACN_CNPM\views\header.php';?>
 <!DOCTYPE html>
 <html lang="en">
 <head>

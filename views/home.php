@@ -1,37 +1,4 @@
 
-<?php
-$cart = [
-    [
-        'maMonAn' => 'MA001',
-        'tenMonAn' => 'Phở Bò',
-        'hinhAnhMonAn' => 'public/image/pho_bo.jpg',
-        'loaiMonAn' => 'Món nước',
-        'buaSangTruaToi' => 'Sáng',
-        'moTa' => 'Phở bò truyền thống Việt Nam',
-        'gia' => '45000.00',
-        'tinhTrang' => 'Đang còn món',
-        'deCuMonAn' => '1',
-        'soLuong' => '2'
-    ],
-    [
-        'maMonAn' => 'MA002',
-        'tenMonAn' => 'Bún Chả',
-        'hinhAnhMonAn' => 'images/bun_cha.jpg',
-        'loaiMonAn' => 'Món nước',
-        'buaSangTruaToi' => 'Trưa',
-        'moTa' => 'Bún chả Hà Nội, đậm đà vị truyền thống',
-        'gia' => '50000.00',
-        'tinhTrang' => 'Đang còn món',
-        'deCuMonAn' => '1',
-        'soLuong' => '3'
-    ]
-];
-
-// Chuyển mảng thành JSON và lưu vào cookie
-setcookie('cart', json_encode($cart), time() + 3600, "/"); // 1 giờ
-
-
-?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -46,11 +13,13 @@ setcookie('cart', json_encode($cart), time() + 3600, "/"); // 1 giờ
 
     <!-- custom css file link  -->
     <link rel="stylesheet" href="./public/css/style.css">
+    <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11.6.10/dist/sweetalert2.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.6.10/dist/sweetalert2.min.js"></script>
     <script>
-    function toggleDropdown() {
-        const menu = document.getElementById('user-menu');
-        menu.style.display = menu.style.display === 'none' || menu.style.display === '' ? 'block' : 'none';
-    }
+        function toggleDropdown() {
+            const menu = document.getElementById('user-menu');
+            menu.style.display = menu.style.display === 'none' || menu.style.display === '' ? 'block' : 'none';
+        }
     </script>
 </head>
 
@@ -76,17 +45,19 @@ setcookie('cart', json_encode($cart), time() + 3600, "/"); // 1 giờ
             <div class="icons">
                 <div id="menu-btn" class="fas fa-bars"></div>
                 <div id="search-btn" class="fas fa-search"></div>
-                <a href="index.php?controller=giohang&action=hienThiGioHang" style="display: inline-block;"><div id="cart-btn" class="fas fa-shopping-cart" >
-                </div></a>
+                <a  <?php $gioHang =  isset($_SESSION['tenDangNhap']) ? 'href="index.php?controller=giohang&action=hienThiGioHang"' : 'onclick="gioHang()"'; echo $gioHang?>  style="display: inline-block;">
+                    <div id="cart-btn" class="fas fa-shopping-cart">
+                    </div>
+                </a>
 
                 <?php if (isset($_SESSION['tenDangNhap'])): ?>
 
-                <?php if ($_SESSION['maQuyen'] === 'admin'): ?>
-                <a href="admin.php">Trang quản trị</a>
-                <?php endif; ?>
-                <a href="index.php?controller=login&action=logout">Log out</a>
+                    <?php if ($_SESSION['maQuyen'] === 'admin'): ?>
+                        <a href="admin.php">Trang quản trị</a>
+                    <?php endif; ?>
+                    <a href="index.php?controller=login&action=logout">Log out</a>
                 <?php else: ?>
-                <a href="index.php?controller=login&action=login">Login</a>
+                    <a href="index.php?controller=login&action=login">Login</a>
                 <?php endif; ?>
             </div>
 
@@ -325,32 +296,32 @@ setcookie('cart', json_encode($cart), time() + 3600, "/"); // 1 giờ
 
         </div>
         <?php if (!empty($danhSachMonAn)): ?>
-        <script>
-        window.onload = function() {
-            if (window.location.search.includes('search')) {
-                const popularSection = document.querySelector('#popular');
-                window.scrollTo(0, popularSection.offsetTop);
-            }
-        };
-        </script>
-        <div class="box-container">
+            <script>
+                window.onload = function() {
+                    if (window.location.search.includes('search')) {
+                        const popularSection = document.querySelector('#popular');
+                        window.scrollTo(0, popularSection.offsetTop);
+                    }
+                };
+            </script>
+            <div class="box-container">
 
 
-            <?php foreach ($danhSachMonAn as $monAn): ?>
-            <div class="box">
-                <a href="#" class="fas fa-heart"></a>
-                <div class="image">
-                    <img src="<?php echo $monAn['hinhAnhMonAn']; ?>" alt="<?php echo $monAn['tenMonAn']; ?>">
-                </div>
-                <div class="content">
-                    <h3><?php echo $monAn['tenMonAn']; ?></h3>
-                    <div class="price"><?php echo number_format($monAn['gia'], 0, ',', '.'); ?> VNĐ</div>
-                    <a href="#" class="btn">đặt hàng</a>
-                </div>
-            </div>
-            <?php endforeach; ?>
+                <?php foreach ($danhSachMonAn as $monAn): ?>
+                    <div class="box" data-maMon="<?php echo $monAn['maMonAn']; ?>">
+                        <a href="#" class="fas fa-heart"></a>
+                        <div class="image">
+                            <img src="<?php echo $monAn['hinhAnhMonAn']; ?>" alt="<?php echo $monAn['tenMonAn']; ?>">
+                        </div>
+                        <div class="content">
+                            <h3><?php echo $monAn['tenMonAn']; ?></h3>
+                            <div class="price"><?php echo number_format($monAn['gia'], 0, ',', '.'); ?> VNĐ</div>
+                            <button class="btn btn_themMAGioHang">đặt hàng</button>
+                        </div>
+                    </div>
+                <?php endforeach; ?>
             <?php else: ?>
-            <p>Không có món ăn nào trong thực đơn.</p>
+                <p>Không có món ăn nào trong thực đơn.</p>
             <?php endif; ?>
 
 
@@ -495,7 +466,7 @@ setcookie('cart', json_encode($cart), time() + 3600, "/"); // 1 giờ
             </div>
         </div> -->
 
-        </div>
+            </div>
 
     </section>
 
@@ -678,22 +649,30 @@ setcookie('cart', json_encode($cart), time() + 3600, "/"); // 1 giờ
 
 
     <!-- custom js file link  -->
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
     <script src="./public/js/script.js"></script>
     <script>
-    function toggleDropdown() {
-        const menu = document.getElementById('dropdown-menu');
-        menu.classList.toggle('show'); // Hiện/Ẩn menu
-    }
-
-    // Đóng menu khi nhấn ngoài
-    window.onclick = function(event) {
-        if (!event.target.matches('.fas')) {
-            const dropdown = document.getElementById('dropdown-menu');
-            if (dropdown.classList.contains('show')) {
-                dropdown.classList.remove('show');
+        function toggleDropdown() {
+            const menu = document.getElementById('dropdown-menu');
+            menu.classList.toggle('show'); // Hiện/Ẩn menu
+        }
+        
+        // Đóng menu khi nhấn ngoài
+        window.onclick = function(event) {
+            if (!event.target.matches('.fas')) {
+                const dropdown = document.getElementById('dropdown-menu');
+                if (dropdown.classList.contains('show')) {
+                    dropdown.classList.remove('show');
+                }
             }
         }
-    }
+        function gioHang () {
+            Swal.fire({
+                        icon: 'error',
+                        title: 'Vui lòng đăng nhập!',
+                    })
+        }
     </script>
 
 </body>
